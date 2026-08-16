@@ -25,7 +25,7 @@ y facilitando la toma de decisiones.
 ## Objetivos del Proyecto
 
 Se espera que la plataforma permita:
-ó
+
 -   Gestionar proyectos de desarrollo de software.
 -   Organizar el trabajo por equipos.
 -   Administrar tareas y asignarlas a los colaboradores.
