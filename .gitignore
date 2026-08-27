@@ -1,0 +1,25 @@
+# Dependencias
+
+node_modules/
+
+# Variables de entorno
+
+.env
+.env.*
+!.env.example
+
+# Registros
+
+*.log
+
+dist/
+coverage/
+
+# Cosas del Visual
+
+.vscode/
+.idea/
+
+# Permisos de la DB
+
+database/db_permissions.sql 
