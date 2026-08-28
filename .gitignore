@@ -22,4 +22,4 @@ coverage/
 
 # Permisos de la DB
 
-database/db_permissions.sql 
+Database/db_permissions.sql 
