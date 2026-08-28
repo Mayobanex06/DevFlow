@@ -1,7 +1,12 @@
 import { ProjectRepository } from "../domain/project.repository.js";
 import { Project } from "../domain/project.entity.js"
+import { ClientRepository } from "../../client/domain/client.repository.js";
 
-type ClientRepository = 0 /* Temporal */
+interface CreateProjectInput {
+    name: string;
+    description: string | null;
+    clientId: number;
+}
 
 export class CreateProjectUseCase {
     constructor(
@@ -29,5 +34,6 @@ export class CreateProjectUseCase {
             completedAt: null
         })
 
+        return this.projectRepository.create(project)
     }
 }

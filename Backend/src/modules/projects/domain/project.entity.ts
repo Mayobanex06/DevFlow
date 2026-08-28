@@ -1,4 +1,4 @@
-type ProjectState = 0 | 1 | 2 | 3  
+export type ProjectState = 0 | 1 | 2 | 3  
 
 interface ProjectProps {
     id?: number,
@@ -14,6 +14,10 @@ interface ProjectProps {
 export class Project {
     constructor(private props: ProjectProps) {}
 
+    get id(){
+        return this.props.id
+    }
+
     get name() {
         return this.props.name
     }
@@ -28,6 +32,22 @@ export class Project {
 
     get clientId(){
         return this.props.clientId
+    }
+
+    get completedAt() {
+    return this.props.completedAt;
+    }
+
+    rename(data: string){
+        this.props.name = data
+    }
+
+    changeDescription(data: string | null){
+        this.props.description = data
+    }
+
+    changeClientId(data: number){
+        this.props.clientId = data
     }
 
     complete(){
