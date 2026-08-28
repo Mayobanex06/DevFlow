@@ -1,25 +1,67 @@
-# Dependencias
-
+# ==========================================
+# Dependencies
+# ==========================================
 node_modules/
 
-# Variables de entorno
 
+# ==========================================
+# Environment variables / secrets
+# ==========================================
 .env
 .env.*
 !.env.example
 
-# Registros
 
-*.log
-
+# ==========================================
+# Build output
+# ==========================================
 dist/
+build/
+*.tsbuildinfo
+
+
+# ==========================================
+# Test / Coverage
+# ==========================================
 coverage/
+.nyc_output/
 
-# Cosas del Visual
 
-.vscode/
+# ==========================================
+# Logs
+# ==========================================
+*.log
+logs/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+
+# ==========================================
+# Cache / Temporary files
+# ==========================================
+.cache/
+.tmp/
+tmp/
+temp/
+
+
+# ==========================================
+# IDE / Editors
+# ==========================================
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
+
 .idea/
+*.swp
+*.swo
+*~
 
-# Permisos de la DB
 
-Database/db_permissions.sql 
+# ==========================================
+# Operating System
+# ==========================================
+.DS_Store
+Thumbs.db
