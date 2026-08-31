@@ -11,14 +11,14 @@ interface CreateProjectInput {
 export class CreateProjectUseCase {
     constructor(
         private projectRepository: ProjectRepository, 
-        private clientRepostiroy: ClientRepository
+        private clientRepository: ClientRepository
     ) {}
 
     async execute(
         input: CreateProjectInput
     ): Promise<Project> {
 
-        const client = await this.clientRepostiroy.findId(
+        const client = await this.clientRepository.findId(
             input.clientId
         )
 
