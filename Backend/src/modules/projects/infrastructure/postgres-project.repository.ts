@@ -1,6 +1,6 @@
 import { Project, ProjectState } from "../domain/project.entity.js";
 import { ProjectRepository } from "../domain/project.repository.js";
-import { db } from "../../../shared/database/postgres.js"
+import { db } from "../../../shared/database/postgres.js";
 
 interface ProjectRow {
     id: number;
@@ -16,15 +16,15 @@ interface ProjectRow {
 export class PostgresProjectRepository implements ProjectRepository {
 
     private toDomain(row: ProjectRow): Project {
-        return new Project({
-            id: row.id,
+        return Project.restore({
+            id: Number(row.id),
             name: row.name,
             description: row.description,
             state: row.state,
             createdAt: row.created_at,
             updatedAt: row.updated_at,
             completedAt: row.completed_at,
-            clientId: row.client_id
+            clientId: Number(row.client_id)
         })
     }
 

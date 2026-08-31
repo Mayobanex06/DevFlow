@@ -4,11 +4,15 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "dev": "tsx watch src/app/server.ts",
+    "build": "tsc",
+    "start": "node dist/app/server.js",
+    "example": "tsx example.ts"
   },
   "keywords": [],
   "type": "module",
   "dependencies": {
+    "dotenv": "^17.4.2",
     "fastify": "^5.12.1",
     "pg": "^8.23.0"
   },
@@ -22,3 +26,4 @@
     "typescript-eslint": "^8.68.0"
   }
 }
+

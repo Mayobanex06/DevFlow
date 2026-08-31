@@ -347,4 +347,8 @@ Contributors should follow the coding and architecture conventions documented in
 
 ## License
 
+<<<<<<< HEAD
 A license has not yet been defined for this project.
+=======
+A license has not yet been defined for this project.
+>>>>>>> e850523 (Entity's changes and difference by Before and Persistence)

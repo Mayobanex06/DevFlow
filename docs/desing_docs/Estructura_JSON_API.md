@@ -52,7 +52,23 @@ Las fechas y horas se enviarán como ISO 8601.
 
 ---
 
-# 2. Respuesta Exitosa
+# 2. Estructura General de Requests
+
+Los requests no utilizarán un envelope `data`. El body contendrá directamente los datos necesarios para la operación.
+
+```json
+{
+  "name": "Internal Platform",
+  "description": "Centralized management platform",
+  "clientId": 4
+}
+```
+
+La ruta y el método HTTP ya proporcionan el contexto de la operación.
+
+---
+
+# 3. Respuesta Exitosa
 
 ```json
 {
@@ -63,11 +79,35 @@ Las fechas y horas se enviarán como ISO 8601.
 }
 ```
 
-`meta` será opcional.
+`meta` será opcional y contendrá únicamente información adicional sobre la response, no propiedades del recurso.
+
+## `data`
+
+`data` contiene el resultado principal solicitado por el cliente. En una consulta individual será normalmente un objeto; en una colección será un array.
+
+## `meta`
+
+`meta` significa **metadata** o metadatos. Describe la response, la colección o el procesamiento de la solicitud.
+
+```json
+{
+  "data": {
+    "id": 12,
+    "name": "DevFlow"
+  },
+  "meta": {
+    "requestId": "req-8f72c1a9"
+  }
+}
+```
+
+`data.id` identifica un recurso de DevFlow. `meta.requestId` identifica una solicitud HTTP concreta y puede utilizarse para correlacionar la response con los logs del backend.
+
+Una response nunca deberá contener `data` y `error` simultáneamente. No se agregarán campos como `success`, `statusCode`, `method` o `path` cuando solamente dupliquen información que ya proporciona HTTP.
 
 ---
 
-# 3. Colecciones
+# 4. Colecciones
 
 ```json
 {
@@ -76,16 +116,20 @@ Las fechas y horas se enviarán como ISO 8601.
     {}
   ],
   "meta": {
-    "page": 1,
-    "limit": 20,
-    "total": 42
+    "requestId": "req-8f72c1a9",
+    "pagination": {
+      "page": 1,
+      "limit": 20,
+      "total": 42,
+      "totalPages": 3
+    }
   }
 }
 ```
 
 ---
 
-# 4. Errores
+# 6. Errores
 
 ```json
 {
@@ -93,17 +137,41 @@ Las fechas y horas se enviarán como ISO 8601.
     "code": "PROJECT_NOT_FOUND",
     "message": "Project not found",
     "details": null
+  },
+  "meta": {
+    "requestId": "req-8f72c1a9"
   }
 }
 ```
 
 - `code`: identificador estable.
 - `message`: mensaje legible.
-- `details`: información adicional opcional.
+- `details`: información adicional opcional y estructurada. Puede ser `null`. Para errores de validación puede contener una lista de campos inválidos.
+
+Ejemplo de validación:
+
+```json
+{
+  "error": {
+    "code": "VALIDATION_ERROR",
+    "message": "The request contains invalid fields",
+    "details": [
+      {
+        "field": "name",
+        "code": "REQUIRED",
+        "message": "Name is required"
+      }
+    ]
+  },
+  "meta": {
+    "requestId": "req-8f72c1a9"
+  }
+}
+```
 
 ---
 
-# 5. User
+# 6. User
 
 ## Representación
 
@@ -133,7 +201,7 @@ Las fechas y horas se enviarán como ISO 8601.
 
 ---
 
-# 6. Role
+# 7. Role
 
 ```json
 {
@@ -145,7 +213,7 @@ Las fechas y horas se enviarán como ISO 8601.
 
 ---
 
-# 7. Permission
+# 8. Permission
 
 ```json
 {
@@ -158,7 +226,7 @@ Las fechas y horas se enviarán como ISO 8601.
 
 ---
 
-# 8. Team
+# 9. Team
 
 ```json
 {
@@ -186,7 +254,7 @@ Con miembros:
 
 ---
 
-# 9. Client
+# 10. Client
 
 ```json
 {
@@ -200,7 +268,7 @@ Con miembros:
 
 ---
 
-# 10. Project
+# 11. Project
 
 ## Representación
 
@@ -245,7 +313,41 @@ Con miembros:
 
 ---
 
-# 11. Task
+# 12. Ejemplo Completo: Colección de Projects
+
+```json
+{
+  "data": [
+    {
+      "id": 12,
+      "name": "DevFlow",
+      "description": "Project management platform",
+      "state": 2,
+      "progress": 65.5,
+      "client": {
+        "id": 3,
+        "name": "CoreTech"
+      },
+      "createdAt": "2026-08-20T14:30:00Z",
+      "updatedAt": "2026-08-29T18:45:00Z",
+      "completedAt": null
+    }
+  ],
+  "meta": {
+    "requestId": "req-8f72c1a9",
+    "pagination": {
+      "page": 1,
+      "limit": 20,
+      "total": 37,
+      "totalPages": 2
+    }
+  }
+}
+```
+
+---
+
+# 13. Task
 
 ## Representación
 
@@ -278,7 +380,7 @@ Con miembros:
 
 ---
 
-# 12. Comment
+# 14. Comment
 
 ```json
 {
@@ -306,7 +408,7 @@ El `userId` debe obtenerse de la identidad autenticada y no confiarse al cliente
 
 ---
 
-# 13. Document
+# 15. Document
 
 ```json
 {
@@ -325,7 +427,7 @@ El `userId` debe obtenerse de la identidad autenticada y no confiarse al cliente
 
 ---
 
-# 14. ActivityHistory
+# 16. ActivityHistory
 
 ```json
 {
@@ -344,7 +446,7 @@ El `userId` debe obtenerse de la identidad autenticada y no confiarse al cliente
 
 ---
 
-# 15. Relaciones N:M
+# 17. Relaciones N:M
 
 Agregar usuario a equipo:
 
@@ -380,7 +482,7 @@ Asociar permiso a rol:
 
 ---
 
-# 16. Reglas
+# 18. Reglas
 
 1. JSON usa `camelCase`; PostgreSQL mantiene `snake_case`.
 2. Las FK pueden enviarse como IDs en requests.
@@ -391,3 +493,12 @@ Asociar permiso a rol:
 7. Los errores deben usar códigos estables.
 8. Valores calculados como `progress` pueden aparecer en responses aunque no sean columnas.
 9. Las estructuras deben mantenerse consistentes entre módulos.
+10. Los requests usan bodies directos; no se envuelven en `data`.
+11. Las responses exitosas utilizan `data`; las de error utilizan `error`.
+12. Una response nunca contiene `data` y `error` simultáneamente.
+13. `meta` contiene metadata de la response, no propiedades del recurso.
+14. La paginación se coloca en `meta.pagination`.
+15. `requestId` identifica la solicitud HTTP y puede correlacionarse con logs.
+16. No agregar al JSON información redundante que ya pertenece al protocolo HTTP.
+17. Las relaciones no deben expandirse arbitrariamente; cada endpoint devuelve solo el contexto necesario.
+18. La representación JSON de un recurso no tiene que ser una copia exacta de su Entity o tabla PostgreSQL.

@@ -26,7 +26,7 @@ export class CreateProjectUseCase {
             throw new Error("Client not found")
         }
 
-        const project = new Project({
+        const project = Project.create({
             name: input.name,
             description: input.description,
             state: 1,

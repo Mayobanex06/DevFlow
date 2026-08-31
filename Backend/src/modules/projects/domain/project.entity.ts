@@ -1,3 +1,4 @@
+
 export type ProjectState = 0 | 1 | 2 | 3  
 
 interface ProjectProps {
@@ -11,10 +12,57 @@ interface ProjectProps {
     clientId: number
 }
 
+interface CreateProjectProps {
+    name: string,
+    description: string | null,
+    state: ProjectState,
+    completedAt: Date | null,
+    clientId: number
+}
+
+interface RestoreProjectProps {
+    id: number,
+    name: string,
+    description: string | null,
+    state: ProjectState,
+    createdAt: Date,
+    updatedAt: Date,
+    completedAt: Date | null, 
+    clientId: number
+}
+
 export class Project {
-    constructor(private props: ProjectProps) {}
+    private constructor(private props: ProjectProps) {}
+
+    static create(props: CreateProjectProps): Project {
+        return new Project({
+            name: props.name,
+            description: props.description,
+            state: props.state,
+            completedAt: props.completedAt,
+            clientId: props.clientId
+        })
+    }
+
+    static restore(props: RestoreProjectProps): Project {
+        return new Project({
+            id: props.id,
+            name: props.name,
+            description: props.description,
+            state: props.state,
+            createdAt: props.createdAt,
+            updatedAt: props.updatedAt,
+            completedAt: props.completedAt,
+            clientId: props.clientId
+        })
+    }
 
     get id(){
+
+        if(this.props.id === undefined){
+            throw new Error("Project has not been presisted")
+        }
+
         return this.props.id
     }
 
