@@ -1,5 +1,12 @@
 import type { FastifyReply, FastifyRequest } from "fastify";
-import { CreateProjectUseCase } from "../application/create-project.user-case.js";
+import { CreateProjectUseCase } from "../application/create-project.use-case.js";
+import { UpdateProjectUseCase } from "../application/update-project.use-case.js"
+import { ListProjectsUseCase } from "../application/list-project.use-case.js"
+import { GetProjectUseCase } from "../application/get-project.use-case.js"
+
+interface ProjectParams {
+    id: number
+}
 
 interface CreateProjectBody {
     name: string, 
@@ -7,8 +14,19 @@ interface CreateProjectBody {
     clientId: number 
 }
 
+interface UpdateProjectBody {
+    name?: string,
+    description?: string | null,
+    clientId?: number
+}
+
 export class ProjectController {
-    constructor(private createProjectUseCase: CreateProjectUseCase) {}
+    constructor(
+        private createProjectUseCase: CreateProjectUseCase,
+        private updateProjectUseCase: UpdateProjectUseCase,
+        private listProjectsUseCase: ListProjectsUseCase,
+        private getProjectUseCase: GetProjectUseCase
+    ) {}
 
     async create(request: FastifyRequest<{
         Body: CreateProjectBody
@@ -23,6 +41,101 @@ export class ProjectController {
         })
 
         return reply.status(201).send({
+            data: {
+                id: project.id,
+                name: project.name,
+                description: project.description,
+                state: project.state,
+                clientId: project.clientId
+            },
+            meta: {
+                requestId: request.id
+            }
+        })
+    }
+
+    async update(
+        request: FastifyRequest<{
+            Params: ProjectParams, 
+            Body: UpdateProjectBody
+         }>,
+        reply: FastifyReply
+    ) {
+
+        const { id } = request.params
+        const body = request.body
+        
+        const project = await this.updateProjectUseCase.execute({
+            id: Number(id),
+            name: body.name,
+            description: body.description,
+            clientId: body.clientId
+        })
+
+        return reply.status(200).send({
+            data: {
+                id: project.id,
+                name: project.name,
+                description: project.description,
+                state: project.state,
+                clientId: project.clientId
+            },
+            meta: {
+                requestId: request.id
+            }
+        })
+    }
+
+    async list(
+        request: FastifyRequest,
+        reply: FastifyReply
+    ) {
+
+        const projects = await this.listProjectsUseCase.execute()
+
+        return reply.status(200).send({
+            data: projects.map(project => ({
+                id: project.id,
+                name: project.name,
+                description: project.description,
+                state: project.state,
+                clientId: project.clientId
+            })),
+
+            meta: {
+                requestId: request.id
+            }
+        })
+
+    }
+
+    async get(
+        request: FastifyRequest<{
+            Params: ProjectParams
+        }>,
+        reply: FastifyReply
+    ) {
+
+        const { id } = request.params
+
+        const project = await this.getProjectUseCase.execute({
+            id: id
+        })
+
+        if (!project){
+            return reply.status(404).send({
+                error: {
+                    "code": "PROJECT_NOT_FOUND",
+                    "message": "Project not found",
+                    "details": null
+                },
+                meta: {
+                    requestId: request.id
+                }
+            })
+        }
+
+        return reply.status(200).send({
             data: {
                 id: project.id,
                 name: project.name,

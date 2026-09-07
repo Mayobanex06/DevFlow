@@ -43,7 +43,7 @@ export class PostgresClientRepository implements ClientRepository {
         return this.toDomain(result.rows[0])
     }
 
-    async findId(id: number): Promise<Client | null> {
+    async findById(id: number): Promise<Client | null> {
 
         const result = await db.query(`
             SELECT *

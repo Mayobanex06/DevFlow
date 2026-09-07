@@ -1,3 +1,4 @@
+import { ClientRepository } from "../../client/domain/client.repository.js";
 import { Project } from "../domain/project.entity.js";
 import { ProjectRepository } from "../domain/project.repository.js";
 
@@ -8,8 +9,11 @@ interface UpdateProjectInput {
     clientId?: number
 }
 
-class UpdateProjectUseCase {
-    constructor(private projectRepository: ProjectRepository) {}
+export class UpdateProjectUseCase {
+    constructor(
+        private projectRepository: ProjectRepository,
+        private clientRepository: ClientRepository    
+    ) {}
 
     async execute(input: UpdateProjectInput): Promise<Project> {
 
@@ -27,6 +31,19 @@ class UpdateProjectUseCase {
 
         if (input.description !== undefined){
             project.changeDescription(input.description)
+        }
+
+        if (input.clientId !== undefined){
+
+            const client = await this.clientRepository.findById(
+                input.clientId
+            )
+
+            if (!client){
+                throw new Error("Client not found")
+            }
+
+            project.changeClientId(input.clientId)
         }
 
         return this.projectRepository.update(project)

@@ -1,6 +1,7 @@
 import { ProjectRepository } from "../domain/project.repository.js";
 import { Project } from "../domain/project.entity.js"
 import { ClientRepository } from "../../client/domain/client.repository.js";
+import { NotFoundError } from "../../../shared/errors/not-found-error.js";
 
 interface CreateProjectInput {
     name: string;
@@ -18,12 +19,15 @@ export class CreateProjectUseCase {
         input: CreateProjectInput
     ): Promise<Project> {
 
-        const client = await this.clientRepository.findId(
+        const client = await this.clientRepository.findById(
             input.clientId
         )
 
         if (!client){
-            throw new Error("Client not found")
+            throw new NotFoundError(
+                "CLIENT_NOT_FOUND",
+                "Client not found"
+            )
         }
 
         const project = Project.create({

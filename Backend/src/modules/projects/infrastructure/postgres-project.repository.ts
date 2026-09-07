@@ -51,25 +51,7 @@ export class PostgresProjectRepository implements ProjectRepository {
         return this.toDomain(result.rows[0]);
     }
 
-    async findById(id: number): Promise<Project | null> {
-
-        const result = await db.query(`
-            SELECT *
-            FROM projects
-            WHERE id = $1
-            `,
-            [
-                id 
-            ]
-        )
-
-        if (result.rows.length === 0){
-            return null
-        }
-
-        return this.toDomain(result.rows[0]);
-    }
-
+    
     async update(project: Project): Promise<Project> {
         
         const result = await db.query(`
@@ -93,7 +75,36 @@ export class PostgresProjectRepository implements ProjectRepository {
                 project.id
             ]
         )
-
+        
         return this.toDomain(result.rows[0]);
+    }
+
+    async findById(id: number): Promise<Project | null> {
+    
+        const result = await db.query(`
+            SELECT *
+            FROM projects
+            WHERE id = $1
+            `,
+            [
+                id 
+            ]
+        )
+    
+        if (result.rows.length === 0){
+            return null
+        }
+    
+        return this.toDomain(result.rows[0]);
+    }
+
+    async findAll(): Promise<Project[]> {
+
+        const result = await db.query(`
+            SELECT *
+            FROM projects
+            `)
+
+        return result.rows.map(row => this.toDomain(row))
     }
 }
