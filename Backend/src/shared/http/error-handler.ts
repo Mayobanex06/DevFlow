@@ -1,5 +1,6 @@
 import type { FastifyInstance } from "fastify";
 import { NotFoundError } from "../errors/not-found-error.js";
+import { ConflictError } from "../errors/conflict-error.js";
 
 export function configureErrorHandler(
     fastify: FastifyInstance
@@ -17,6 +18,19 @@ export function configureErrorHandler(
                     requestId: request.id
                 }
             });
+        }
+
+        if (error instanceof ConflictError) {
+            return reply.status(409).send({
+                error: {
+                    code: error.code,
+                    message: error.message,
+                    details: null
+                },
+                meta: {
+                    requestId: request.id
+                }
+            })
         }
 
         request.log.error(error);
