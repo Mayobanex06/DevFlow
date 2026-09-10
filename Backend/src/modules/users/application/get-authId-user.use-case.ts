@@ -13,6 +13,6 @@ export class GetAuthUseCase {
 
     async execute(input: GetAuthInput): Promise<AuthUser | null> {
 
-        return this.authUserRepository.findByid(input.id)
+        return this.authUserRepository.findById(input.id)
     }
 }

@@ -17,7 +17,7 @@ export class PostgresRoleRepository implements RoleRepository {
         })
     }
 
-    async findId(id: number): Promise<Role> {
+    async findById(id: number): Promise<Role> {
 
         const result = await db.query(`
             SELECT *

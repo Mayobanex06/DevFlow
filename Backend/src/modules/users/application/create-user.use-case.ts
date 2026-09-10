@@ -21,7 +21,7 @@ export class CreateUserUseCase {
 
     async execute(input: CreateUserInput): Promise<User> {
 
-        const authUserId = await this.authUserRepository.findByid(
+        const authUserId = await this.authUserRepository.findById(
             input.authUserId
         )
 

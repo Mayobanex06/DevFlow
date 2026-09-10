@@ -105,6 +105,6 @@ export class PostgresProjectRepository implements ProjectRepository {
             FROM projects
             `)
 
-        return result.rows.map(row => this.toDomain(row))
+        return result.rows.map((row: ProjectRow) => this.toDomain(row))
     }
 }
