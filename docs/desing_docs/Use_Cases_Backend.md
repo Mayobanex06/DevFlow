@@ -332,6 +332,7 @@ uso funcional. No deben duplicarse por cada CU del que deriven.
 -   `CreateTeamUseCase`
 -   `GetTeamUseCase`
 -   `ListTeamsUseCase`
+-   `ListTeamMembersUseCase`
 -   `AddMemberToTeamUseCase`
 -   `RemoveMemberFromTeamUseCase`
 

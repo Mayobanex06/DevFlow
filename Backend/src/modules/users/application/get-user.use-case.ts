@@ -1,4 +1,3 @@
-import { GetterSetter } from "fastify/types/instance.js";
 import { UserRepository } from "../domain/user.repository.js";
 import { User } from "../domain/user.entity.js";
 

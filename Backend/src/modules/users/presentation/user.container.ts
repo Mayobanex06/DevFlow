@@ -6,7 +6,7 @@ import { ListAssignableUsersUseCase } from "../application/list-user-assignable-
 import { GetUserByAuthUserIdUseCase } from "../application/get-auth-user.use-case.js";
 import { PostgresAuthUserRepository } from "../infrastructure/postgres-authUser.repository.js";
 
-import { PostgresRoleRepository } from "../../role/infrastructure/postgres-role.repository.js";
+import { PostgresRoleRepository } from "../../authorization/infrastructure/postgres-role.repository.js";
 import { PostgresProjectRepository } from "../../projects/infrastructure/postgres-project.repository.js";
 import { UserController } from "./user.controller.js";
 

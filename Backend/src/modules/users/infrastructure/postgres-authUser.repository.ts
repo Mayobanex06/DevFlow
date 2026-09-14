@@ -18,7 +18,7 @@ export class PostgresAuthUserRepository implements AuthUserRepository {
     async findById(id: string): Promise<AuthUser | null> {
         const result = await db.query(`
             SELECT *
-            FROM auth_users
+            FROM neon_auth."user"
             WHERE id = $1
         `, [
             id

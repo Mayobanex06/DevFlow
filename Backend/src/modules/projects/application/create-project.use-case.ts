@@ -1,6 +1,6 @@
 import { ProjectRepository } from "../domain/project.repository.js";
 import { Project } from "../domain/project.entity.js"
-import { ClientRepository } from "../../client/domain/client.repository.js";
+import { ClientRepository } from "../../clients/domain/client.repository.js";
 import { NotFoundError } from "../../../shared/errors/not-found-error.js";
 
 interface CreateProjectInput {

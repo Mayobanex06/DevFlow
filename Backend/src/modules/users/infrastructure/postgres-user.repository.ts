@@ -13,11 +13,11 @@ interface UserRows {
 export class PostgresUserRepository implements UserRepository {
     private toDomain(row: UserRows): User {
         return User.restore({
-            id: Number(row.id),
+            id: row.id,
             authUserId: row.auth_user_id,
             name: row.name,
             createdAt: row.created_at,
-            roleId: Number(row.role_id)
+            roleId: row.role_id
         })
     }
 

@@ -1,6 +1,6 @@
 import { ConflictError } from "../../../shared/errors/conflict-error.js";
 import { NotFoundError } from "../../../shared/errors/not-found-error.js";
-import { RoleRepository } from "../../role/domain/role.repository.js";
+import { RoleRepository } from "../../authorization/domain/role.repository.js";
 import { AuthUserRepository } from "../domain/auth-user.repository.js";
 import { User } from "../domain/user.entity.js";
 import { UserRepository } from "../domain/user.repository.js";

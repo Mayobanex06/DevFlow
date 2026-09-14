@@ -4,6 +4,7 @@ import { ListUsersUseCase } from "../application/list-users.use-case.js";
 import { GetUserUseCase } from "../application/get-user.use-case.js";
 import { ListAssignableUsersUseCase } from "../application/list-user-assignable-project.use-case.js";
 import { GetUserByAuthUserIdUseCase } from "../application/get-auth-user.use-case.js";
+import { NotFoundError } from "../../../shared/errors/not-found-error.js";
 
 interface UserIdParams {
     id: number
@@ -81,16 +82,10 @@ export class UserController {
         })
 
         if (!user){
-            return reply.status(404).send({
-                error: {
-                    "code": "USER_NOT_FOUND",
-                    "message": "User not found",
-                    "details": null
-                },
-                meta: {
-                    requestId: request.id
-                }
-            })
+            throw new NotFoundError(
+                "USER_NOT_FOUND",
+                "User not found"
+            )
         }
 
         return reply.status(200).send({
@@ -143,16 +138,10 @@ export class UserController {
         })
 
         if (!user){
-            return reply.status(404).send({
-                error: {
-                    "code": "USER_NOT_FOUND",
-                    "message": "User not found",
-                    "details": null
-                },
-                meta: {
-                    requestId: request.id
-                }
-            })
+            throw new NotFoundError(
+                "USER_NOT_FOUND",
+                "User not found"
+            )
         }
 
         return reply.status(200).send({

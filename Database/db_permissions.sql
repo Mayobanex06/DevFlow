@@ -64,3 +64,8 @@ TO devflow_app;
 
 GRANT devflow_owner TO alfonso_dev;
 GRANT devflow_owner TO ramses_dev;
+
+-- Permisos sobre Auth User 
+
+GRANT USAGE ON SCHEMA neon_auth TO devflow_app;
+GRANT SELECT ON TABLE neon_auth."user" TO devflow_app;

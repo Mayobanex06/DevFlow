@@ -1,4 +1,5 @@
-import { ClientRepository } from "../../client/domain/client.repository.js";
+import { NotFoundError } from "../../../shared/errors/not-found-error.js";
+import { ClientRepository } from "../../clients/domain/client.repository.js";
 import { Project } from "../domain/project.entity.js";
 import { ProjectRepository } from "../domain/project.repository.js";
 
@@ -22,7 +23,9 @@ export class UpdateProjectUseCase {
         )
 
         if (!project){
-            throw new Error("Project not found")
+            throw new NotFoundError(
+                "PROJECT_NOT_FOUND",
+                "Project not found")
         }
 
         if (input.name !== undefined){

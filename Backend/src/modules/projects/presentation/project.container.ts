@@ -1,5 +1,5 @@
 import { PostgresProjectRepository } from "../infrastructure/postgres-project.repository.js";
-import { PostgresClientRepository } from "../../client/infrastructure/postgres-client.repository.js";
+import { PostgresClientRepository } from "../../clients/infrastructure/postgres-client.repository.js";
 
 import { CreateProjectUseCase } from "../application/create-project.use-case.js";
 import { UpdateProjectUseCase } from "../application/update-project.use-case.js";
