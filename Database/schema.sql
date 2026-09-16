@@ -84,23 +84,25 @@ CREATE TABLE IF NOT EXISTS tasks (
 
 CREATE TABLE IF NOT EXISTS documents (
     id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-    name VARCHAR(100) NOT NULL, 
-    original_name VARCHAR(100) NOT NULL, 
-    storage_path VARCHAR(150) NOT NULL,
-    mime_type VARCHAR(100) NOT NULL, 
-    size BIGINT NOT NULL,
+
+    name VARCHAR(150) NOT NULL,
+    original_name VARCHAR(255) NOT NULL,
+    storage_path VARCHAR(500) NOT NULL,
+    mime_type VARCHAR(100) NOT NULL,
+    size BIGINT NOT NULL CHECK (size >= 0),
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
 
     project_id BIGINT NOT NULL,
     task_id BIGINT,
 
-        CONSTRAINT fk_documents_projects
-            FOREIGN KEY (project_id)
-            REFERENCES projects(id),
+    CONSTRAINT fk_documents_projects
+        FOREIGN KEY (project_id)
+        REFERENCES projects(id),
 
-        CONSTRAINT fk_documents_tasks
-            FOREIGN KEY (task_id)
-            REFERENCES tasks(id)
+    CONSTRAINT fk_documents_tasks
+        FOREIGN KEY (task_id)
+        REFERENCES tasks(id)
+        ON DELETE SET NULL
 );
 
 CREATE TABLE IF NOT EXISTS comments (

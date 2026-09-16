@@ -4,6 +4,7 @@ import { clientRoutes } from "../../modules/clients/presentation/client.routes.j
 import { userRoutes } from "../../modules/users/presentation/user.routes.js"; 
 import { authorizationRoutes } from "../../modules/authorization/presentation/authorization.routes.js";
 import { teamRoutes } from "../../modules/teams/presentation/team.routes.js"
+import { documentRoutes } from "../../modules/documents/presentation/document.routes.js";
 
 export async function apiRoutes(
     fastify: FastifyInstance
@@ -26,5 +27,9 @@ export async function apiRoutes(
 
     fastify.register(teamRoutes, {
         prefix: "/teams"
+    })
+
+    fastify.register(documentRoutes, {
+        prefix: "/documents"
     })
 }

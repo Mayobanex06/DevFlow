@@ -15,7 +15,6 @@ export async function teamRoutes(
         teamController.get.bind(teamController)
     )
 
-
     fastify.get(
         "/:teamId/members",
         teamController.listAllTeamMembers.bind(teamController)
