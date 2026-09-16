@@ -11,9 +11,9 @@ interface CreateProjectInput {
 
 export class CreateProjectUseCase {
     constructor(
-        private projectRepository: ProjectRepository, 
+        private projectRepository: ProjectRepository,
         private clientRepository: ClientRepository
-    ) {}
+    ) { }
 
     async execute(
         input: CreateProjectInput
@@ -23,7 +23,7 @@ export class CreateProjectUseCase {
             input.clientId
         )
 
-        if (!client){
+        if (!client) {
             throw new NotFoundError(
                 "CLIENT_NOT_FOUND",
                 "Client not found"
