@@ -46,6 +46,14 @@ export class Task {
         return this.props.description;
     }
 
+    get projectId(){
+        return this.props.projectId
+    }
+
+    get assignedUserId(){
+        return this.props.assignedUserId
+    }
+
     private constructor(private props: TaskProps) { }
 
     static restore(props: RestoreTaskProps): Task {
