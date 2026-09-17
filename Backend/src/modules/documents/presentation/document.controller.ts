@@ -176,6 +176,5 @@ export class DocumentController {
                 requestId: request.id
             }
         })
-
     }
 }
