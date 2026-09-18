@@ -3,9 +3,17 @@ import { CreateProjectUseCase } from "../application/create-project.use-case.js"
 import { UpdateProjectUseCase } from "../application/update-project.use-case.js"
 import { ListProjectsUseCase } from "../application/list-project.use-case.js"
 import { GetProjectUseCase } from "../application/get-project.use-case.js"
+import { ListAllTeamsProjectUseCase } from "../application/listAllTeams-projects.use-case.js";
+import { AddTeamProjectUseCase } from "../application/addTeam-project.use-case.js";
+import { RemoveTeamProjectUseCase } from "../application/removeTeam-project.use-case.js";
 
 interface ProjectParams {
     id: number
+}
+
+interface ProjectTeamParams {
+    projectId: number,
+    teamId: number
 }
 
 interface CreateProjectBody {
@@ -25,7 +33,10 @@ export class ProjectController {
         private createProjectUseCase: CreateProjectUseCase,
         private updateProjectUseCase: UpdateProjectUseCase,
         private listProjectsUseCase: ListProjectsUseCase,
-        private getProjectUseCase: GetProjectUseCase
+        private getProjectUseCase: GetProjectUseCase,
+        private listAllTeamsProjectUseCase: ListAllTeamsProjectUseCase,
+        private addTeamProjectUseCase: AddTeamProjectUseCase,
+        private removeTeamProjectUseCase: RemoveTeamProjectUseCase
     ) {}
 
     async create(request: FastifyRequest<{
@@ -147,6 +158,69 @@ export class ProjectController {
                 requestId: request.id
             }
         })
+    }
 
+    async listAllTeams(request: FastifyRequest<{
+        Params: ProjectParams
+    }>, reply: FastifyReply) {
+
+        const id = request.params.id
+
+        const teams = await this.listAllTeamsProjectUseCase.execute({
+            id: id
+        })
+
+        return reply.status(200).send({
+            data: teams.map(team => ({
+                id: team.id,
+                name: team.name,
+                description: team.description
+            })),
+            meta: {
+                requestId: request.id
+            }
+        })
+    }
+
+    async addTeam(request: FastifyRequest<{
+        Params: ProjectTeamParams
+    }>, reply: FastifyReply) {
+
+        const params = request.params
+
+        await this.addTeamProjectUseCase.execute({
+            projectId: params.projectId,
+            teamId: params.teamId
+        })
+
+        return reply.status(200).send({
+            data: {
+                success: true
+            },
+            meta: {
+                requestId: request.id
+            }
+        })
+    }
+
+    async removeTeam(request: FastifyRequest<{
+        Params: ProjectTeamParams
+    }>, reply: FastifyReply) {
+
+        const params = request.params
+
+        await this.removeTeamProjectUseCase.execute({
+            projectId: params.projectId,
+            teamId: params.teamId
+        })
+
+        return reply.status(200).send({
+            data: {
+                success: true
+            }, 
+            meta: {
+                requestId: request.id
+            }
+        })
     }
 }

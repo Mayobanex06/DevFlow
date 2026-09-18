@@ -1,6 +1,8 @@
 import { Project, ProjectState } from "../domain/project.entity.js";
 import { ProjectRepository } from "../domain/project.repository.js";
 import { db } from "../../../shared/database/postgres.js";
+import { Team } from "../../teams/domain/team.entity.js";
+import { UserInvitationsCard } from "@neondatabase/neon-js/auth/react";
 
 interface ProjectRow {
     id: number;
@@ -11,6 +13,13 @@ interface ProjectRow {
     updated_at: Date;
     completed_at: Date | null;
     client_id: number;
+}
+
+interface TeamRow {
+    id: number,
+    name: string,
+    description: string,
+    created_at: Date
 }
 
 export class PostgresProjectRepository implements ProjectRepository {
@@ -25,6 +34,15 @@ export class PostgresProjectRepository implements ProjectRepository {
             updatedAt: row.updated_at,
             completedAt: row.completed_at,
             clientId: Number(row.client_id)
+        })
+    }
+
+    private toTeam(row: TeamRow): Team {
+        return Team.restore({
+            id: Number(row.id),
+            name: row.name,
+            description: row.description,
+            createdAt: row.created_at
         })
     }
 
@@ -106,5 +124,70 @@ export class PostgresProjectRepository implements ProjectRepository {
             `)
 
         return result.rows.map((row: ProjectRow) => this.toDomain(row))
+    }
+
+    async findAllTeams(projectId: number): Promise<Team[]> {
+        
+        const result = await db.query(`
+            SELECT t.id, t.name, t.description, t.created_at
+            FROM teams_projects tp
+            JOIN teams t
+                ON tp.team_id = t.id
+            WHERE tp.project_id = $1
+            `,
+            [
+                projectId
+            ]
+        )
+
+        return result.rows.map(row => (this.toTeam(row)))
+    }
+
+    async hasTeam(projectId: number, teamId: number): Promise<boolean> {
+        
+        const exists = await db.query(`
+            SELECT EXISTS (
+            SELECT 1
+            FROM teams_projects
+            WHERE project_id = $1
+                AND teamId = $2
+            )
+            `,
+            [
+                projectId,
+                teamId
+            ]
+        )
+
+        return exists.rows[0].exists
+    }
+
+    async addTeam(projectId: number, teamId: number): Promise<void> {
+        
+        await db.query(`
+            INSERT INTO teams_projects (
+            project_id,
+            team_id
+            ) VALUES ($1, $2)
+            `, 
+            [
+                projectId,
+                teamId
+            ]
+        )
+    }
+
+    async removeTeam(projectId: number, teamId: number): Promise<void> {
+        
+        await db.query(`
+            DELETE FROM teams_projects
+            WHERE project_id = $1
+                AND team_id = $2;
+            `,
+            [
+                projectId,
+                teamId
+            ]
+        )
     }
 }

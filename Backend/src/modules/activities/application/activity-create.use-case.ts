@@ -1,6 +1,6 @@
 import { ProjectRepository } from "../../projects/domain/project.repository.js";
-import { Activity } from "../domain/activity_history.entity.js";
-import { ActivityRepository } from "../domain/activity_history.repository.js";
+import { Activity } from "../domain/activities.entity.js";
+import { ActivityRepository } from "../domain/activities.repository.js";
 
 interface CreateActivityInput {
     action: string;

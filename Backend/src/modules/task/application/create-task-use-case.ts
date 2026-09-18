@@ -8,7 +8,7 @@ import { Task } from "../domain/task.entity.js";
 
 interface CreateTaskInput {
     name: string;
-    description: string;
+    description: string | null;
     projectId: number;
     assignedUserId: number;
 }

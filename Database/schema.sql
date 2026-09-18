@@ -124,27 +124,50 @@ CREATE TABLE IF NOT EXISTS comments (
 
 );
 
-CREATE TABLE IF NOT EXISTS activity_history (
-    id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY, 
-    action VARCHAR(100) NOT NULL,
+CREATE TABLE IF NOT EXISTS activities (
+    id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    type VARCHAR(100) NOT NULL,
     description TEXT,
+    entity_type VARCHAR(50) NOT NULL,
+    entity_id BIGINT NOT NULL,
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
 
     user_id BIGINT NOT NULL,
     project_id BIGINT NOT NULL,
-    task_id BIGINT,
 
-        CONSTRAINT fk_activity_users
-            FOREIGN KEY (user_id)
-            REFERENCES users(id),
-        
-        CONSTRAINT fk_activity_projects
-            FOREIGN KEY (project_id)
-            REFERENCES projects(id),
-        
-        CONSTRAINT fk_activity_tasks
-            FOREIGN KEY (task_id)
-            REFERENCES tasks(id)
+    CONSTRAINT chk_activities_type
+        CHECK (
+            type IN (
+                'PROJECT_CREATED',
+                'PROJECT_COMPLETED',
+                'TASK_CREATED',
+                'TASK_COMPLETED',
+                'TEAM_ADDED',
+                'TEAM_REMOVED',
+                'DOCUMENT_ATTACHED',
+                'DOCUMENT_DELETED',
+                'COMMENT_CREATED'
+            )
+        ),
+
+    CONSTRAINT chk_activities_entity_type
+        CHECK (
+            entity_type IN (
+                'PROJECT',
+                'TASK',
+                'TEAM',
+                'DOCUMENT',
+                'COMMENT'
+            )
+        ),
+
+    CONSTRAINT fk_activities_users
+        FOREIGN KEY (user_id)
+        REFERENCES users(id),
+
+    CONSTRAINT fk_activities_projects
+        FOREIGN KEY (project_id)
+        REFERENCES projects(id)
 );
 
 

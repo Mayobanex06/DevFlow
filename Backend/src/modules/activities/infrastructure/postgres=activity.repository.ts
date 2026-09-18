@@ -1,6 +1,6 @@
-import type { ActivityRepository } from '../domain/activity_history.repository.js';
+import type { ActivityRepository } from '../domain/activities.repository.js';
 
-import { Activity } from '../domain/activity_history.entity.js';
+import { Activity } from '../domain/activities.entity.js';
 import { db } from '../../../shared/database/postgres.js';
 
 
