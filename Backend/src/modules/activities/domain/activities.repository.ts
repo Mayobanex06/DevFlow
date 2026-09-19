@@ -1,6 +1,6 @@
 import { Activity } from "./activities.entity.js";
 
 export interface ActivityRepository {
-    findById(id: number): Promise<Activity |null>
-    
+    create(activity: Activity): Promise<Activity | null>
+    findByProjectId(projectId: number): Promise<Activity[]>
 }

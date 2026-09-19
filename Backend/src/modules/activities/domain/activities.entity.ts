@@ -25,7 +25,7 @@ export enum ActivityEntityType {
 interface ActivityProps {
     id?: number;
     type: ActivityType;
-    description: string;
+    description: string | null;
     entityType: ActivityEntityType;
     entityId: number;
     projectId: number;
@@ -35,7 +35,7 @@ interface ActivityProps {
 
 interface CreateActivityProps {
     type: ActivityType;
-    description: string;
+    description: string | null;
     entityType: ActivityEntityType;
     entityId: number;
     projectId: number;
@@ -45,7 +45,7 @@ interface CreateActivityProps {
 interface RestoreActivityProps {
     id: number;
     type: ActivityType;
-    description: string;
+    description: string | null;
     entityType: ActivityEntityType;
     entityId: number;
     projectId: number;
@@ -83,7 +83,7 @@ export class Activity {
         return this.props.type;
     }
 
-    get description(): string {
+    get description(): string | null{
         return this.props.description;
     }
 
