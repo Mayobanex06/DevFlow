@@ -1,20 +1,20 @@
 import { Task } from "../domain/task.entity.js";
 import { TaskRepository } from "../domain/task.repository.js";
-import { UserRepository } from "../../users/domain/user.repository.js";
 import { NotFoundError } from "../../../shared/errors/not-found-error.js";
+import { ActivityRecorder } from "../../activities/domain/activity-recorder.js";
+import { ActivityEntityType, ActivityType } from "../../activities/domain/activities.entity.js";
 
 interface UpdateTaskUseInput {
     id: number;
     name?: string;
     description?: string | null;
-    updateAt?: Date;
-    assignedUserId: number;
+    userId: number;
 }
 
 export class UpdateTaskUseCase {
     constructor(
         private taskRepository: TaskRepository,
-        private userRepository: UserRepository
+        private activityRecorder: ActivityRecorder
     ) { }
 
     async execute(input: UpdateTaskUseInput): Promise<Task> {
@@ -38,22 +38,25 @@ export class UpdateTaskUseCase {
             task.changeDescription(input.description)
         }
 
+        const hasChanges =
+            input.name !== undefined ||
+            input.description !== undefined
 
-        if (input.assignedUserId !== undefined) {
-
-            const user = await this.userRepository.findById(
-                input.assignedUserId
-            )
-
-            if (!user) {
-                throw new NotFoundError(
-                    "USER_NOT_FOUND",
-                    "User not found"
-                )
-            }
-
-            task.changeAssignedUserId(input.assignedUserId)
+        if (!hasChanges) {
+            throw new Error("No fields provided to update");
         }
-        return this.taskRepository.update(task)
+
+        const updatedTask = await this.taskRepository.update(task)
+
+        await this.activityRecorder.record({
+            type: ActivityType.TASK_UPDATED,
+            entityType: ActivityEntityType.TASK,
+            entityId: updatedTask.id,
+            projectId: updatedTask.projectId,
+            userId: input.userId
+        })
+
+        return updatedTask
     }
+
 }

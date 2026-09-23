@@ -8,20 +8,20 @@ import { UpdateTaskUseCase } from "../application/update-task-use-case.js";
 import { NotFoundError } from "../../../shared/errors/not-found-error.js";
 import { ListAssignedTaskUseCase } from "../application/listAssigned-task.use-case.js";
 
-interface IdParams {
+export interface IdParams {
     id: number
 }
 
-interface UserIdParams {
+export interface UserIdParams {
     userId: number
 }
 
-interface AssignTaskParams {
+export interface AssignTaskParams {
     taskId: number,
     userId: number
 }
 
-interface TaskBody {
+export interface TaskBody {
     name: string;
     description: string | null;
     projectId: number;
@@ -126,10 +126,11 @@ export class TaskController {
             name: body.name,
             description: body.description,
             projectId: body.projectId,
-            assignedUserId: body.assignedUserId
+            assignedUserId: body.assignedUserId,
+            userId: request.user.id
         })
 
-        return reply.send(200).send({
+        return reply.status(201).send({
             data: {
                 id: task.id,
                 name: task.name,
@@ -156,7 +157,7 @@ export class TaskController {
             id: id,
             name: body.name,
             description: body.description,
-            assignedUserId: body.assignedUserId
+            userId: request.user.id
         })
 
         return reply.status(200).send({
@@ -182,7 +183,8 @@ export class TaskController {
 
         await this.assignTaskUseCase.execute({
             taskId: params.taskId,
-            userId: params.userId
+            userIdAssign: params.userId,
+            userId: request.user.id
         })
         
         return reply.status(200).send({
@@ -202,7 +204,8 @@ export class TaskController {
         const id = request.params.id
 
         await this.changeStateTaskUseCase.execute({
-            id: id
+            id: id,
+            userId: request.user.id
         })
 
         return reply.status(200).send({

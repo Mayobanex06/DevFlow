@@ -7,22 +7,22 @@ import { ListAllTeamsProjectUseCase } from "../application/listAllTeams-projects
 import { AddTeamProjectUseCase } from "../application/addTeam-project.use-case.js";
 import { RemoveTeamProjectUseCase } from "../application/removeTeam-project.use-case.js";
 
-interface ProjectParams {
+export interface ProjectParams {
     id: number
 }
 
-interface ProjectTeamParams {
+export interface ProjectTeamParams {
     projectId: number,
     teamId: number
 }
 
-interface CreateProjectBody {
+export interface CreateProjectBody {
     name: string, 
     description: string | null,
     clientId: number 
 }
 
-interface UpdateProjectBody {
+export interface UpdateProjectBody {
     name?: string,
     description?: string | null,
     clientId?: number
@@ -48,7 +48,8 @@ export class ProjectController {
         const project = await this.createProjectUseCase.execute({
             name: body.name,
             description: body.description,
-            clientId: body.clientId
+            clientId: body.clientId,
+            userId: request.user.id
         })
 
         return reply.status(201).send({
@@ -80,7 +81,8 @@ export class ProjectController {
             id: Number(id),
             name: body.name,
             description: body.description,
-            clientId: body.clientId
+            clientId: body.clientId,
+            userId: request.user.id
         })
 
         return reply.status(200).send({
@@ -190,7 +192,8 @@ export class ProjectController {
 
         await this.addTeamProjectUseCase.execute({
             projectId: params.projectId,
-            teamId: params.teamId
+            teamId: params.teamId,
+            userId: request.user.id
         })
 
         return reply.status(200).send({
@@ -211,7 +214,8 @@ export class ProjectController {
 
         await this.removeTeamProjectUseCase.execute({
             projectId: params.projectId,
-            teamId: params.teamId
+            teamId: params.teamId,
+            userId: request.user.id
         })
 
         return reply.status(200).send({

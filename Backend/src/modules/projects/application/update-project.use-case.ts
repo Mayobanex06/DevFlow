@@ -1,4 +1,6 @@
 import { NotFoundError } from "../../../shared/errors/not-found-error.js";
+import { ActivityEntityType, ActivityType } from "../../activities/domain/activities.entity.js";
+import { ActivityRecorder } from "../../activities/domain/activity-recorder.js";
 import { ClientRepository } from "../../clients/domain/client.repository.js";
 import { Project } from "../domain/project.entity.js";
 import { ProjectRepository } from "../domain/project.repository.js";
@@ -8,12 +10,14 @@ interface UpdateProjectInput {
     name?: string,
     description?: string | null,
     clientId?: number
+    userId: number
 }
 
 export class UpdateProjectUseCase {
     constructor(
         private projectRepository: ProjectRepository,
-        private clientRepository: ClientRepository    
+        private clientRepository: ClientRepository,
+        private activityRecorder: ActivityRecorder    
     ) {}
 
     async execute(input: UpdateProjectInput): Promise<Project> {
@@ -43,12 +47,34 @@ export class UpdateProjectUseCase {
             )
 
             if (!client){
-                throw new Error("Client not found")
+                throw new NotFoundError(
+                    "CLIENT_NOT_FOUND",
+                    "Client not found"
+                )
             }
 
             project.changeClientId(input.clientId)
         }
 
-        return this.projectRepository.update(project)
+        const hasChanges =
+            input.name !== undefined ||
+            input.description !== undefined ||
+            input.clientId !== undefined;
+
+        if (!hasChanges) {
+            throw new Error("No fields provided to update");
+        }
+
+        const updatedProject = await this.projectRepository.update(project)
+
+        await this.activityRecorder.record({
+            type: ActivityType.PROJECT_UPDATED,
+            entityType: ActivityEntityType.PROJECT,
+            entityId: updatedProject.id,
+            projectId: updatedProject.id,
+            userId: input.userId
+        })
+
+        return updatedProject
     }
 }

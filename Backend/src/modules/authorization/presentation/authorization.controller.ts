@@ -8,15 +8,15 @@ import { RoleCode } from "../domain/role.js";
 import { PermissionCode } from "../domain/permission.js";
 import { NotFoundError } from "../../../shared/errors/not-found-error.js";
 
-interface RoleIdParams {
+export interface RoleIdParams {
     id: number
 }
 
-interface RoleCodeParams {
+export interface RoleCodeParams {
     code: RoleCode
 }
 
-interface PermissionCodeParams {
+export interface PermissionCodeParams {
     code: PermissionCode
 }
 

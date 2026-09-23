@@ -71,67 +71,29 @@ VALUES
     ('PERMISSION_READ', 'Allows viewing permissions')
 ON CONFLICT (code) DO NOTHING;
 
--- ============================================
--- ROLE_PERMISSIONS
--- ============================================
+-- =========================================================
+-- DEVFLOW V1 - RBAC ROLE PERMISSIONS SEED
+-- =========================================================
 
+-- ---------------------------------------------------------
 -- ADMIN
+-- Acceso completo a todos los permisos existentes.
+-- ---------------------------------------------------------
 
 INSERT INTO roles_permissions (role_id, permission_id)
-
 SELECT r.id, p.id
 FROM roles r
-JOIN permissions p ON p.code IN (
-    'PROJECT_CREATE',
-    'PROJECT_READ',
-    'PROJECT_UPDATE',
-    'PROJECT_DELETE',
-    'PROJECT_CHANGE_STATE',
-    'PROJECT_VIEW_PROGRESS',
-
-    'TASK_CREATE',
-    'TASK_READ',
-    'TASK_UPDATE',
-    'TASK_DELETE',
-    'TASK_ASSIGN',
-    'TASK_CHANGE_STATE',
-    'TASK_CHANGE_PRIORITY',
-    'TASK_CHANGE_DUE_DATE',
-
-    'USER_CREATE',
-    'USER_READ',
-    'USER_UPDATE',
-    'USER_DELETE',
-    'USER_CHANGE_ROLE',
-
-    'TEAM_CREATE',
-    'TEAM_READ',
-    'TEAM_UPDATE',
-    'TEAM_DELETE',
-    'TEAM_ADD_MEMBER',
-    'TEAM_REMOVE_MEMBER',
-
-    'COMMENT_CREATE',
-    'COMMENT_READ',
-    'COMMENT_UPDATE',
-    'COMMENT_DELETE',
-
-    'DOCUMENT_CREATE',
-    'DOCUMENT_READ',
-    'DOCUMENT_DELETE',
-
-    'ACTIVITY_READ',
-    'ROLE_READ',
-    'PERMISSION_READ'
-)
+CROSS JOIN permissions p
 WHERE r.code = 'ADMIN'
-
 ON CONFLICT DO NOTHING;
 
+
+-- ---------------------------------------------------------
 -- MANAGER
+-- Gestión general de proyectos, tareas y equipos.
+-- ---------------------------------------------------------
 
 INSERT INTO roles_permissions (role_id, permission_id)
-
 SELECT r.id, p.id
 FROM roles r
 JOIN permissions p ON p.code IN (
@@ -141,44 +103,42 @@ JOIN permissions p ON p.code IN (
     'PROJECT_DELETE',
     'PROJECT_CHANGE_STATE',
     'PROJECT_VIEW_PROGRESS',
+    'PROJECT_ADD_TEAM',
+    'PROJECT_REMOVE_TEAM',
 
     'TASK_CREATE',
     'TASK_READ',
     'TASK_UPDATE',
-    'TASK_DELETE',
     'TASK_ASSIGN',
     'TASK_CHANGE_STATE',
-    'TASK_CHANGE_PRIORITY',
-    'TASK_CHANGE_DUE_DATE',
-
-    'USER_READ',
 
     'TEAM_CREATE',
     'TEAM_READ',
-    'TEAM_UPDATE',
-    'TEAM_DELETE',
     'TEAM_ADD_MEMBER',
     'TEAM_REMOVE_MEMBER',
-
-    'COMMENT_CREATE',
-    'COMMENT_READ',
-    'COMMENT_UPDATE',
-    'COMMENT_DELETE',
 
     'DOCUMENT_CREATE',
     'DOCUMENT_READ',
     'DOCUMENT_DELETE',
 
+    'USER_READ',
+
+    'CLIENT_READ',
+
+    'ROLE_READ',
+    'PERMISSION_READ',
+
     'ACTIVITY_READ'
 )
-WHERE r.code = 'MANAGER'
-
 ON CONFLICT DO NOTHING;
 
+
+-- ---------------------------------------------------------
 -- PROJECT MANAGER
+-- Gestión operativa de proyectos.
+-- ---------------------------------------------------------
 
 INSERT INTO roles_permissions (role_id, permission_id)
-
 SELECT r.id, p.id
 FROM roles r
 JOIN permissions p ON p.code IN (
@@ -187,41 +147,97 @@ JOIN permissions p ON p.code IN (
     'PROJECT_UPDATE',
     'PROJECT_CHANGE_STATE',
     'PROJECT_VIEW_PROGRESS',
+    'PROJECT_ADD_TEAM',
+    'PROJECT_REMOVE_TEAM',
 
     'TASK_CREATE',
     'TASK_READ',
     'TASK_UPDATE',
-    'TASK_DELETE',
     'TASK_ASSIGN',
     'TASK_CHANGE_STATE',
-    'TASK_CHANGE_PRIORITY',
-    'TASK_CHANGE_DUE_DATE',
-
-    'USER_READ',
 
     'TEAM_READ',
     'TEAM_ADD_MEMBER',
     'TEAM_REMOVE_MEMBER',
 
-    'COMMENT_CREATE',
-    'COMMENT_READ',
-    'COMMENT_UPDATE',
-    'COMMENT_DELETE',
+    'DOCUMENT_CREATE',
+    'DOCUMENT_READ',
+    'DOCUMENT_DELETE',
+
+    'USER_READ',
+
+    'CLIENT_READ',
+
+    'ACTIVITY_READ'
+)
+ON CONFLICT DO NOTHING;
+
+
+-- ---------------------------------------------------------
+-- DEVELOPER
+-- Trabajo sobre proyectos y tareas asignadas.
+-- ---------------------------------------------------------
+
+INSERT INTO roles_permissions (role_id, permission_id)
+SELECT r.id, p.id
+FROM roles r
+JOIN permissions p ON p.code IN (
+    'PROJECT_READ',
+    'PROJECT_VIEW_PROGRESS',
+
+    'TASK_READ',
+    'TASK_UPDATE',
+    'TASK_CHANGE_STATE',
+
+    'TEAM_READ',
 
     'DOCUMENT_CREATE',
     'DOCUMENT_READ',
     'DOCUMENT_DELETE',
 
+    'USER_READ',
+
     'ACTIVITY_READ'
 )
-WHERE r.code = 'PROJECT_MANAGER'
-
 ON CONFLICT DO NOTHING;
 
--- DEVELOPER 
+
+-- ---------------------------------------------------------
+-- QA
+-- Seguimiento, validación y creación de tareas.
+-- ---------------------------------------------------------
 
 INSERT INTO roles_permissions (role_id, permission_id)
+SELECT r.id, p.id
+FROM roles r
+JOIN permissions p ON p.code IN (
+    'PROJECT_READ',
+    'PROJECT_VIEW_PROGRESS',
 
+    'TASK_CREATE',
+    'TASK_READ',
+    'TASK_UPDATE',
+    'TASK_CHANGE_STATE',
+
+    'TEAM_READ',
+
+    'DOCUMENT_CREATE',
+    'DOCUMENT_READ',
+    'DOCUMENT_DELETE',
+
+    'USER_READ',
+
+    'ACTIVITY_READ'
+)
+ON CONFLICT DO NOTHING;
+
+
+-- ---------------------------------------------------------
+-- DESIGNER
+-- Trabajo sobre tareas y documentos asignados.
+-- ---------------------------------------------------------
+
+INSERT INTO roles_permissions (role_id, permission_id)
 SELECT r.id, p.id
 FROM roles r
 JOIN permissions p ON p.code IN (
@@ -234,23 +250,25 @@ JOIN permissions p ON p.code IN (
 
     'TEAM_READ',
 
-    'COMMENT_CREATE',
-    'COMMENT_READ',
-    'COMMENT_UPDATE',
-    'COMMENT_DELETE',
-
     'DOCUMENT_CREATE',
     'DOCUMENT_READ',
-    'DOCUMENT_DELETE'
-)
-WHERE r.code = 'DEVELOPER'
+    'DOCUMENT_DELETE',
 
+    'USER_READ',
+
+    'ACTIVITY_READ'
+)
 ON CONFLICT DO NOTHING;
 
--- QA 
+
+-- ---------------------------------------------------------
+-- CLIENT
+-- Acceso de consulta.
+-- Las restricciones sobre SUS proyectos se resolverán
+-- mediante autorización contextual.
+-- ---------------------------------------------------------
 
 INSERT INTO roles_permissions (role_id, permission_id)
-
 SELECT r.id, p.id
 FROM roles r
 JOIN permissions p ON p.code IN (
@@ -258,70 +276,9 @@ JOIN permissions p ON p.code IN (
     'PROJECT_VIEW_PROGRESS',
 
     'TASK_READ',
-    'TASK_UPDATE',
-    'TASK_CHANGE_STATE',
 
-    'TEAM_READ',
-
-    'COMMENT_CREATE',
-    'COMMENT_READ',
-    'COMMENT_UPDATE',
-    'COMMENT_DELETE',
-
-    'DOCUMENT_CREATE',
     'DOCUMENT_READ',
-    'DOCUMENT_DELETE'
+
+    'ACTIVITY_READ'
 )
-WHERE r.code = 'QA'
-
-ON CONFLICT DO NOTHING;
-
--- DESIGNER 
-
-INSERT INTO roles_permissions (role_id, permission_id)
-
-SELECT r.id, p.id
-FROM roles r
-JOIN permissions p ON p.code IN (
-    'PROJECT_READ',
-    'PROJECT_VIEW_PROGRESS',
-
-    'TASK_READ',
-    'TASK_UPDATE',
-    'TASK_CHANGE_STATE',
-
-    'TEAM_READ',
-
-    'COMMENT_CREATE',
-    'COMMENT_READ',
-    'COMMENT_UPDATE',
-    'COMMENT_DELETE',
-
-    'DOCUMENT_CREATE',
-    'DOCUMENT_READ',
-    'DOCUMENT_DELETE'
-)
-WHERE r.code = 'DESIGNER'
-
-ON CONFLICT DO NOTHING;
-
--- CLIENT 
-
-INSERT INTO roles_permissions (role_id, permission_id)
-
-SELECT r.id, p.id
-FROM roles r
-JOIN permissions p ON p.code IN (
-    'PROJECT_READ',
-    'PROJECT_VIEW_PROGRESS',
-
-    'COMMENT_CREATE',
-    'COMMENT_READ',
-    'COMMENT_UPDATE',
-    'COMMENT_DELETE',
-
-    'DOCUMENT_READ'
-)
-WHERE r.code = 'CLIENT'
-
 ON CONFLICT DO NOTHING;

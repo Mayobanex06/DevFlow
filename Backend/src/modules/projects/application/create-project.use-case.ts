@@ -2,17 +2,22 @@ import { ProjectRepository } from "../domain/project.repository.js";
 import { Project } from "../domain/project.entity.js"
 import { ClientRepository } from "../../clients/domain/client.repository.js";
 import { NotFoundError } from "../../../shared/errors/not-found-error.js";
+import { ActivityRecorder } from "../../activities/domain/activity-recorder.js";
+import { ActivityEntityType, ActivityType } from "../../activities/domain/activities.entity.js";
+
 
 interface CreateProjectInput {
     name: string;
     description: string | null;
     clientId: number;
+    userId: number;
 }
 
 export class CreateProjectUseCase {
     constructor(
         private projectRepository: ProjectRepository,
-        private clientRepository: ClientRepository
+        private clientRepository: ClientRepository,
+        private activityRecorder: ActivityRecorder
     ) { }
 
     async execute(
@@ -38,6 +43,17 @@ export class CreateProjectUseCase {
             completedAt: null
         })
 
-        return this.projectRepository.create(project)
+        const createdProject = await this.projectRepository.create(project)
+
+        await this.activityRecorder.record({
+            type: ActivityType.PROJECT_CREATED,
+            entityType: ActivityEntityType.PROJECT,
+            entityId: createdProject.id,
+            projectId: createdProject.id,
+            userId: input.userId
+        });
+
+        return createdProject
+
     }
 }

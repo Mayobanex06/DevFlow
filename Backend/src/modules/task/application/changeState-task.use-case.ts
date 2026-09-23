@@ -28,7 +28,7 @@ export class ChangeStateTaskUseCase {
         await this.taskRepository.changeState(input.id)
 
         await this.activityRecorder.record({
-            type: ActivityType.TASK_COMPLETED,
+            type: ActivityType.TASK_STATE_CHANGED,
             entityType: ActivityEntityType.TASK,
             entityId: task.id,
             projectId: task.projectId,

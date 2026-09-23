@@ -6,19 +6,19 @@ import { GetByProjectIdDocumentUseCase } from "../application/getByProjectId-doc
 import { GetByTaskIdDocumentUseCase } from "../application/getByTaskId-document.use-case.js"
 import { NotFoundError } from "../../../shared/errors/not-found-error.js"
 
-interface IdParams {
+export interface IdParams {
     id: number
 }
 
-interface ProjectIdParams {
+export interface ProjectIdParams {
     projectId: number
 }
 
-interface TaskIdParams {
+export interface TaskIdParams {
     taskId: number
 }
 
-interface DocumentBody {
+export interface DocumentBody {
     name: string,
     original_name: string,
     storage_path: string,
@@ -81,7 +81,7 @@ export class DocumentController {
             projectId: projectId
         })
 
-        return reply.send(200).send({
+        return reply.status(200).send({
             data: documents.map(document => ({
                 id: Number(document.id),
                 name: document.name,
@@ -138,7 +138,8 @@ export class DocumentController {
             mime_type: body.mime_type,
             size: body.size,
             projectId: body.projectId,
-            taskId: body.taskId
+            taskId: body.taskId,
+            userId: request.user.id
         })
 
         return reply.status(201).send({
@@ -165,7 +166,8 @@ export class DocumentController {
         const id = request.params.id
 
         await this.deleteDocumentUseCase.execute({
-            id: id
+            id: id,
+            userId: request.user.id
         })
 
         return reply.status(200).send({

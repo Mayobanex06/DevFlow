@@ -1,17 +1,21 @@
 import { ConflictError } from "../../../shared/errors/conflict-error.js";
 import { NotFoundError } from "../../../shared/errors/not-found-error.js";
+import { ActivityEntityType, ActivityType } from "../../activities/domain/activities.entity.js";
+import { ActivityRecorder } from "../../activities/domain/activity-recorder.js";
 import { TeamRepository } from "../../teams/domain/team.repository.js";
 import { ProjectRepository } from "../domain/project.repository.js";
 
 interface addTeamProjectInput {
     projectId: number,
-    teamId: number
+    teamId: number,
+    userId: number
 } 
 
 export class AddTeamProjectUseCase {
     constructor(
         private projectRepository: ProjectRepository,
-        private teamRepository: TeamRepository
+        private teamRepository: TeamRepository,
+        private activityRecorder: ActivityRecorder
     ) {}
 
     async execute(input: addTeamProjectInput): Promise<void> {
@@ -39,10 +43,19 @@ export class AddTeamProjectUseCase {
         if (hasTeam){
             throw new ConflictError(
                 "TEAM_PROJECT_ALREADY_EXISTS",
-                "Team member already exists"
+                "Team is already assigned to project"
             )
         }
 
-        return this.projectRepository.addTeam(input.projectId, input.teamId)
+        await this.projectRepository.addTeam(input.projectId, input.teamId)
+
+        await this.activityRecorder.record({
+            type: ActivityType.TEAM_ADDED_TO_PROJECT,
+            entityType: ActivityEntityType.TEAM,
+            entityId: input.teamId,
+            projectId: input.projectId,
+            userId: input.userId
+        })
+
     }
 }
