@@ -9,7 +9,8 @@ interface ProjectProps {
     createdAt?: Date,
     updatedAt?: Date,
     completedAt: Date | null, 
-    clientId: number
+    clientId: number,
+    projectManagerId: number
 }
 
 interface CreateProjectProps {
@@ -17,7 +18,8 @@ interface CreateProjectProps {
     description: string | null,
     state: ProjectState,
     completedAt: Date | null,
-    clientId: number
+    clientId: number,
+    projectManagerId: number
 }
 
 interface RestoreProjectProps {
@@ -28,7 +30,8 @@ interface RestoreProjectProps {
     createdAt: Date,
     updatedAt: Date,
     completedAt: Date | null, 
-    clientId: number
+    clientId: number,
+    projectManagerId: number
 }
 
 export class Project {
@@ -36,24 +39,13 @@ export class Project {
 
     static create(props: CreateProjectProps): Project {
         return new Project({
-            name: props.name,
-            description: props.description,
-            state: props.state,
-            completedAt: props.completedAt,
-            clientId: props.clientId
+            ...props
         })
     }
 
     static restore(props: RestoreProjectProps): Project {
         return new Project({
-            id: props.id,
-            name: props.name,
-            description: props.description,
-            state: props.state,
-            createdAt: props.createdAt,
-            updatedAt: props.updatedAt,
-            completedAt: props.completedAt,
-            clientId: props.clientId
+           ...props
         })
     }
 
@@ -83,7 +75,11 @@ export class Project {
     }
 
     get completedAt() {
-    return this.props.completedAt;
+        return this.props.completedAt;
+    }
+
+    get projectManagerId() {
+        return this.props.projectManagerId;
     }
 
     rename(data: string){

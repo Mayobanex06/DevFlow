@@ -2,7 +2,6 @@ import { Project, ProjectState } from "../domain/project.entity.js";
 import { ProjectRepository } from "../domain/project.repository.js";
 import { db } from "../../../shared/database/postgres.js";
 import { Team } from "../../teams/domain/team.entity.js";
-import { UserInvitationsCard } from "@neondatabase/neon-js/auth/react";
 
 interface ProjectRow {
     id: number;
@@ -13,6 +12,8 @@ interface ProjectRow {
     updated_at: Date;
     completed_at: Date | null;
     client_id: number;
+    project_manager_id: number;
+
 }
 
 interface TeamRow {
@@ -33,7 +34,8 @@ export class PostgresProjectRepository implements ProjectRepository {
             createdAt: row.created_at,
             updatedAt: row.updated_at,
             completedAt: row.completed_at,
-            clientId: Number(row.client_id)
+            clientId: Number(row.client_id),
+            projectManagerId: Number(row.project_manager_id)
         })
     }
 
@@ -53,16 +55,18 @@ export class PostgresProjectRepository implements ProjectRepository {
             name,
             description,
             state,
-            client_id
+            client_id,
+            project_manager_id
             )
-            VALUES ($1, $2, $3, $4)
+            VALUES ($1, $2, $3, $4, $5)
             RETURNING *
             `,
             [
                 project.name,
                 project.description,
                 project.state,
-                project.clientId
+                project.clientId,
+                project.projectManagerId
             ]
         )
 
@@ -150,7 +154,7 @@ export class PostgresProjectRepository implements ProjectRepository {
             SELECT 1
             FROM teams_projects
             WHERE project_id = $1
-                AND teamId = $2
+                AND team_id = $2
             )
             `,
             [

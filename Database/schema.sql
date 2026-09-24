@@ -19,21 +19,29 @@ CREATE TABLE IF NOT EXISTS permissions (
     description TEXT
 ); 
 
-CREATE TABLE IF NOT EXISTS projects (
+CREATE TABLE projects (
     id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-    name VARCHAR(150) NOT NULL, 
+
+    name VARCHAR(150) NOT NULL,
     description TEXT,
-    state SMALLINT NOT NULL DEFAULT 1
-        CHECK(state IN (0, 1, 2, 3)),  
-    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(), 
+
+    state SMALLINT NOT NULL
+        CHECK (state IN (0, 1, 2, 3)),
+
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     completed_at TIMESTAMPTZ,
 
     client_id BIGINT NOT NULL,
+    project_manager_id BIGINT NOT NULL,
 
-        CONSTRAINT fk_projects_clients
-            FOREIGN KEY (client_id)
-            REFERENCES clients(id)
+    CONSTRAINT fk_projects_client
+        FOREIGN KEY (client_id)
+        REFERENCES clients(id),
+
+    CONSTRAINT fk_projects_project_manager
+        FOREIGN KEY (project_manager_id)
+        REFERENCES users(id)
 );
 
 CREATE TABLE IF NOT EXISTS users (
@@ -43,14 +51,19 @@ CREATE TABLE IF NOT EXISTS users (
 
     auth_user_id UUID NOT NULL UNIQUE,
     role_id BIGINT NOT NULL,
+    client_id BIGINT,
 
-        CONSTRAINT fk_users_neonauth
-            FOREIGN KEY (auth_user_id)
-            REFERENCES neon_auth."user"(id),
+    CONSTRAINT fk_users_neonauth
+        FOREIGN KEY (auth_user_id)
+        REFERENCES neon_auth."user"(id),
 
-        CONSTRAINT fk_users_roles
-            FOREIGN KEY (role_id)
-            REFERENCES roles(id)
+    CONSTRAINT fk_users_roles
+        FOREIGN KEY (role_id)
+        REFERENCES roles(id),
+
+    CONSTRAINT fk_users_clients
+        FOREIGN KEY (client_id)
+        REFERENCES clients(id)
 );
 
 
