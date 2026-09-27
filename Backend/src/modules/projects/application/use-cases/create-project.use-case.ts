@@ -1,21 +1,24 @@
-import { ProjectRepository } from "../domain/project.repository.js";
-import { Project } from "../domain/project.entity.js"
-import { ClientRepository } from "../../clients/domain/client.repository.js";
-import { NotFoundError } from "../../../shared/errors/not-found-error.js";
-import { ActivityRecorder } from "../../activities/domain/activity-recorder.js";
-import { ActivityEntityType, ActivityType } from "../../activities/domain/activities.entity.js";
+import { ProjectRepository } from "../../domain/project.repository.js";
+import { Project } from "../../domain/project.entity.js"
+import { ClientRepository } from "../../../clients/domain/client.repository.js";
+import { NotFoundError } from "../../../../shared/errors/not-found-error.js";
+import { ActivityRecorder } from "../../../activities/domain/activity-recorder.js";
+import { ActivityEntityType, ActivityType } from "../../../activities/domain/activities.entity.js";
+import { ProjectManagerPolicy } from "../../domain/project.policy.js";
 
 
 interface CreateProjectInput {
     name: string;
     description: string | null;
     clientId: number;
+    projectManagerId: number;
     userId: number;
 }
 
 export class CreateProjectUseCase {
     constructor(
         private projectRepository: ProjectRepository,
+        private projectManagerPolicy: ProjectManagerPolicy,
         private clientRepository: ClientRepository,
         private activityRecorder: ActivityRecorder
     ) { }
@@ -35,11 +38,14 @@ export class CreateProjectUseCase {
             )
         }
 
+        await this.projectManagerPolicy.ensureValid(input.projectManagerId)
+
         const project = Project.create({
             name: input.name,
             description: input.description,
             state: 1,
             clientId: input.clientId,
+            projectManagerId: input.projectManagerId,
             completedAt: null
         })
 

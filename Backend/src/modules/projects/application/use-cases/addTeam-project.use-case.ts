@@ -1,11 +1,11 @@
-import { ConflictError } from "../../../shared/errors/conflict-error.js";
-import { NotFoundError } from "../../../shared/errors/not-found-error.js";
-import { ActivityEntityType, ActivityType } from "../../activities/domain/activities.entity.js";
-import { ActivityRecorder } from "../../activities/domain/activity-recorder.js";
-import { TeamRepository } from "../../teams/domain/team.repository.js";
-import { ProjectRepository } from "../domain/project.repository.js";
+import { ConflictError } from "../../../../shared/errors/conflict-error.js"
+import { NotFoundError } from "../../../../shared/errors/not-found-error.js"
+import { ActivityEntityType, ActivityType } from "../../../activities/domain/activities.entity.js"
+import { ActivityRecorder } from "../../../activities/domain/activity-recorder.js"
+import { TeamRepository } from "../../../teams/domain/team.repository.js"
+import { ProjectRepository } from "../../domain/project.repository.js"
 
-interface addTeamProjectInput {
+interface AddTeamProjectInput {
     projectId: number,
     teamId: number,
     userId: number
@@ -18,7 +18,7 @@ export class AddTeamProjectUseCase {
         private activityRecorder: ActivityRecorder
     ) {}
 
-    async execute(input: addTeamProjectInput): Promise<void> {
+    async execute(input: AddTeamProjectInput): Promise<void> {
 
         const project = await this.projectRepository.findById(input.projectId)
 
@@ -42,7 +42,7 @@ export class AddTeamProjectUseCase {
 
         if (hasTeam){
             throw new ConflictError(
-                "TEAM_PROJECT_ALREADY_EXISTS",
+                "TEAM_ALREADY_ASSIGNED",
                 "Team is already assigned to project"
             )
         }

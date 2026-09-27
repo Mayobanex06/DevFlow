@@ -1,5 +1,10 @@
 
-export type ProjectState = 0 | 1 | 2 | 3  
+export enum ProjectState {
+    CANCELLED = 0,
+    IN_PROGRESS = 1,
+    PAUSED = 2,
+    COMPLETED = 3
+}
 
 interface ProjectProps {
     id?: number,
@@ -32,6 +37,12 @@ interface RestoreProjectProps {
     completedAt: Date | null, 
     clientId: number,
     projectManagerId: number
+}
+
+interface UpdateProjectDetails {
+    name?: string;
+    description?: string | null;
+    clientId?: number;
 }
 
 export class Project {
@@ -94,12 +105,45 @@ export class Project {
         this.props.clientId = data
     }
 
-    complete(){
-        if (this.props.state === 0){
-            throw new Error("Cancelled project cannot be completed")
+    changeState(newState: ProjectState){
+
+        if (this.props.state === newState) {
+            // TODO [ERRORS]: Replace with invalid state transition error.
+            throw new Error("Project is already in the requested state");
         }
 
-        this.props.state = 3;
-        this.props.completedAt = new Date();
+        if (this.props.state === ProjectState.CANCELLED || this.props.state === ProjectState.COMPLETED){
+            // TODO [ERRORS]: Replace with invalid state transition error.
+            throw new Error("Cannot change the state of a finished project");
+        }
+
+        if (this.props.state === ProjectState.PAUSED && newState === ProjectState.COMPLETED){
+            // TODO [ERRORS]: Replace with invalid state transition error.
+            throw new Error(
+                "A paused project cannot be completed"
+            );
+        }
+
+        this.props.state = newState;
+
+        if (newState === ProjectState.COMPLETED) {
+            this.props.completedAt = new Date();
+        }
+    }
+
+    updateDetails(details: UpdateProjectDetails){
+        
+        if (details.name !== undefined){
+            this.props.name = details.name
+        }
+
+        if (details.description !== undefined){
+            this.props.description = details.description
+        }
+
+        if (details.clientId !== undefined){
+            this.props.clientId = details.clientId
+        }
+
     }
 }

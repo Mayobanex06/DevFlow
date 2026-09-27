@@ -1,9 +1,10 @@
-import { NotFoundError } from "../../../shared/errors/not-found-error.js";
-import { ActivityEntityType, ActivityType } from "../../activities/domain/activities.entity.js";
-import { ActivityRecorder } from "../../activities/domain/activity-recorder.js";
-import { ClientRepository } from "../../clients/domain/client.repository.js";
-import { Project } from "../domain/project.entity.js";
-import { ProjectRepository } from "../domain/project.repository.js";
+import { NotFoundError } from "../../../../shared/errors/not-found-error.js"
+import { ActivityEntityType, ActivityType } from "../../../activities/domain/activities.entity.js"
+import { ActivityRecorder } from "../../../activities/domain/activity-recorder.js"
+import { ClientRepository } from "../../../clients/domain/client.repository.js"
+import { Project } from "../../domain/project.entity.js"
+import { ProjectRepository } from "../../domain/project.repository.js"
+
 
 interface UpdateProjectInput {
     id: number, 
@@ -17,7 +18,7 @@ export class UpdateProjectUseCase {
     constructor(
         private projectRepository: ProjectRepository,
         private clientRepository: ClientRepository,
-        private activityRecorder: ActivityRecorder    
+        private activityRecorder: ActivityRecorder   
     ) {}
 
     async execute(input: UpdateProjectInput): Promise<Project> {
@@ -32,19 +33,21 @@ export class UpdateProjectUseCase {
                 "Project not found")
         }
 
-        if (input.name !== undefined){
-            project.rename(input.name)
-        }
+        if (
+            input.name === undefined &&
+            input.description === undefined &&
+            input.clientId === undefined
+        ) {
+            // TODO [ERRORS]: Replace with validation error.
+            throw new Error(
+                "No fields provided to update project"
+            )
 
-        if (input.description !== undefined){
-            project.changeDescription(input.description)
         }
 
         if (input.clientId !== undefined){
-
-            const client = await this.clientRepository.findById(
-                input.clientId
-            )
+            
+            const client = await this.clientRepository.findById(input.clientId)
 
             if (!client){
                 throw new NotFoundError(
@@ -52,18 +55,13 @@ export class UpdateProjectUseCase {
                     "Client not found"
                 )
             }
-
-            project.changeClientId(input.clientId)
         }
 
-        const hasChanges =
-            input.name !== undefined ||
-            input.description !== undefined ||
-            input.clientId !== undefined;
-
-        if (!hasChanges) {
-            throw new Error("No fields provided to update");
-        }
+        project.updateDetails({
+            name: input.name,
+            description: input.description,
+            clientId: input.clientId
+        })
 
         const updatedProject = await this.projectRepository.update(project)
 

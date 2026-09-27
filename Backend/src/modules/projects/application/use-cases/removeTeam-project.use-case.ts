@@ -1,8 +1,10 @@
-import { NotFoundError } from "../../../shared/errors/not-found-error.js";
-import { ActivityEntityType, ActivityType } from "../../activities/domain/activities.entity.js";
-import { ActivityRecorder } from "../../activities/domain/activity-recorder.js";
-import { TeamRepository } from "../../teams/domain/team.repository.js";
-import { ProjectRepository } from "../domain/project.repository.js";
+import { ConflictError } from "../../../../shared/errors/conflict-error.js"
+import { NotFoundError } from "../../../../shared/errors/not-found-error.js"
+import { ActivityEntityType, ActivityType } from "../../../activities/domain/activities.entity.js"
+import { ActivityRecorder } from "../../../activities/domain/activity-recorder.js"
+import { TeamRepository } from "../../../teams/domain/team.repository.js"
+import { ProjectRepository } from "../../domain/project.repository.js"
+
 
 interface RemoveTeamProjectInput {
     projectId: number,
@@ -39,9 +41,9 @@ export class RemoveTeamProjectUseCase {
 
         const hasTeam = await this.projectRepository.hasTeam(input.projectId, input.teamId)
 
-        if (!hasTeam){
-            throw new NotFoundError(
-                "TEAM_PROJECT_NOT_FOUND",
+        if (!hasTeam) {
+            throw new ConflictError(
+                "TEAM_NOT_ASSIGNED",
                 "Team is not assigned to project"
             )
         }
