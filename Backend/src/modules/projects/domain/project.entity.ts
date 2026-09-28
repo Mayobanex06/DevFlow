@@ -21,8 +21,6 @@ interface ProjectProps {
 interface CreateProjectProps {
     name: string,
     description: string | null,
-    state: ProjectState,
-    completedAt: Date | null,
     clientId: number,
     projectManagerId: number
 }
@@ -50,7 +48,9 @@ export class Project {
 
     static create(props: CreateProjectProps): Project {
         return new Project({
-            ...props
+            ...props,
+            state: ProjectState.IN_PROGRESS,
+            completedAt: null
         })
     }
 
@@ -63,7 +63,7 @@ export class Project {
     get id(){
 
         if(this.props.id === undefined){
-            throw new Error("Project has not been presisted")
+            throw new Error("Project has not been persisted")
         }
 
         return this.props.id
@@ -91,18 +91,6 @@ export class Project {
 
     get projectManagerId() {
         return this.props.projectManagerId;
-    }
-
-    rename(data: string){
-        this.props.name = data
-    }
-
-    changeDescription(data: string | null){
-        this.props.description = data
-    }
-
-    changeClientId(data: number){
-        this.props.clientId = data
     }
 
     changeState(newState: ProjectState){

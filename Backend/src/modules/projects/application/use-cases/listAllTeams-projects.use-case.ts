@@ -1,19 +1,22 @@
-import { ProjectRepository } from "../domain/project.repository.js";
-import { Team } from "../../teams/domain/team.entity.js"
-import { NotFoundError } from "../../../shared/errors/not-found-error.js";
+import { NotFoundError } from "../../../../shared/errors/not-found-error.js"
+import { Team } from "../../../teams/domain/team.entity.js"
+import { ProjectAccessPolicy } from "../../domain/project.policy.js"
+import { ProjectRepository } from "../../domain/project.repository.js"
 
 interface ListAllTeamsInput{
-    id: number
+    projectId: number,
+    userId: number
 }
 
 export class ListAllTeamsProjectUseCase {
     constructor(
-        private projectRepository: ProjectRepository
+        private projectRepository: ProjectRepository,
+        private projectAccessPolicy: ProjectAccessPolicy
     ) {}
 
     async execute(input: ListAllTeamsInput): Promise<Team[]>{
 
-        const project = await this.projectRepository.findById(input.id)
+        const project = await this.projectRepository.findById(input.projectId)
 
         if (!project){
             throw new NotFoundError(
@@ -22,6 +25,8 @@ export class ListAllTeamsProjectUseCase {
             )
         }
 
-        return this.projectRepository.findAllTeams(input.id)
+        await this.projectAccessPolicy.ensureCanAccess(project, input.userId)
+
+        return this.projectRepository.findAllTeams(input.projectId)
     }
 }

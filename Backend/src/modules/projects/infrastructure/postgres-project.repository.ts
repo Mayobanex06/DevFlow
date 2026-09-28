@@ -81,18 +81,14 @@ export class PostgresProjectRepository implements ProjectRepository {
             SET
             name = $1,
             description = $2,
-            state = $3,
-            completed_at = $4,
-            client_id = $5,
+            client_id = $3,
             updated_at = NOW()
-            WHERE id = $6
+            WHERE id = $4
             RETURNING *;
             `,
             [
                 project.name,
                 project.description,
-                project.state,
-                project.completedAt,
                 project.clientId,
                 project.id
             ]

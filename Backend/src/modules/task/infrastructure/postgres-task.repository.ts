@@ -1,6 +1,6 @@
 import { db } from "../../../shared/database/postgres.js";
 import { Task } from "../domain/task.entity.js";
-import { TaskRepository } from "../domain/task.repository.js";
+import { ProjectTaskStats, TaskRepository } from "../domain/task.repository.js";
 
 interface TaskRow {
     id: number;
@@ -144,5 +144,27 @@ export class PostgresTaskRepository implements TaskRepository {
                 taskId
             ]
         )
+    }
+
+    async getProjectTaskStats(projectId: number): Promise<ProjectTaskStats> {
+        
+        const result = await db.query(`
+        SELECT
+            COUNT(*) AS total_tasks,
+            COUNT(*) FILTER (
+                WHERE completed_at IS NOT NULL
+            ) AS completed_tasks
+        FROM tasks
+        WHERE project_id = $1
+        `,
+            [
+                projectId
+            ]
+        )
+
+        return {
+            totalTasks: Number(result.rows[0].total_tasks),
+            completedTasks: Number(result.rows[0].completed_tasks)
+        }
     }
 }

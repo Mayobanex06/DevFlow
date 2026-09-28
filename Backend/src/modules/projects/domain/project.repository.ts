@@ -1,6 +1,13 @@
 import { Project, ProjectState } from "./project.entity.js"
 import { Team } from "../../teams/domain/team.entity.js"
 
+export interface ProjectProgress {
+    projectId: number;
+    totalTasks: number;
+    completedTasks: number;
+    progress: number;
+}
+
 export interface ProjectRepository {
     create(project: Project): Promise<Project>
     update(project: Project): Promise<Project>
