@@ -1,9 +1,10 @@
-import { TaskRepository } from "../domain/task.repository.js";
-import { NotFoundError } from "../../../shared/errors/not-found-error.js";
-import { ActivityRecorder } from "../../activities/domain/activity-recorder.js";
-import { ActivityEntityType, ActivityType } from "../../activities/domain/activities.entity.js";
+import { NotFoundError } from "../../../../shared/errors/not-found-error.js"
+import { ActivityEntityType, ActivityType } from "../../../activities/domain/activities.entity.js"
+import { ActivityRecorder } from "../../../activities/domain/activity-recorder.js"
+import { TaskRepository } from "../../domain/task.repository.js"
 
-interface ChangeStateTaskInput {
+
+interface CompleteTaskInput {
     id: number
     userId: number
 }
@@ -14,7 +15,7 @@ export class ChangeStateTaskUseCase {
         private activityRecorder: ActivityRecorder
     ){}
 
-    async execute(input: ChangeStateTaskInput): Promise<void> {
+    async execute(input: CompleteTaskInput): Promise<void> {
 
         const task = await this.taskRepository.findById(input.id)
 
@@ -25,10 +26,12 @@ export class ChangeStateTaskUseCase {
             )
         }
 
-        await this.taskRepository.changeState(input.id)
+        task.complete()
+
+        await this.taskRepository.complete(task)
 
         await this.activityRecorder.record({
-            type: ActivityType.TASK_STATE_CHANGED,
+            type: ActivityType.TASK_COMPLETED,
             entityType: ActivityEntityType.TASK,
             entityId: task.id,
             projectId: task.projectId,

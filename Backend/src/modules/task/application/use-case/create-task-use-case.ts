@@ -1,11 +1,10 @@
-
-import { NotFoundError } from "../../../shared/errors/not-found-error.js";
-import { ProjectRepository } from "../../projects/domain/project.repository.js";
-import { UserRepository } from "../../users/domain/user.repository.js";
-import { TaskRepository } from "../domain/task.repository.js";
-import { Task } from "../domain/task.entity.js";
-import { ActivityRecorder } from "../../activities/domain/activity-recorder.js";
-import { ActivityEntityType, ActivityType } from "../../activities/domain/activities.entity.js";
+import { NotFoundError } from "../../../../shared/errors/not-found-error.js";
+import { ActivityEntityType, ActivityType } from "../../../activities/domain/activities.entity.js";
+import { ActivityRecorder } from "../../../activities/domain/activity-recorder.js";
+import { ProjectRepository } from "../../../projects/domain/project.repository.js";
+import { Task } from "../../domain/task.entity.js";
+import { TaskAssignPolicy } from "../../domain/task.policy.js";
+import { TaskRepository } from "../../domain/task.repository.js";
 
 
 interface CreateTaskInput {
@@ -21,7 +20,7 @@ export class CreateTaskUseCase {
     constructor(
         private taskRepository: TaskRepository,
         private projectRepository: ProjectRepository,
-        private userRepository: UserRepository,
+        private taskAssignPolicy: TaskAssignPolicy,
         private activityRecorder: ActivityRecorder
     ) { }
 
@@ -36,16 +35,8 @@ export class CreateTaskUseCase {
                 "Project not found"
             )
         }
-        const user = await this.userRepository.findById(
-            input.assignedUserId
-        )
-
-        if (!user) {
-            throw new NotFoundError(
-                "USER_NOT_FOUND",
-                "User not found"
-            )
-        }
+        
+        await this.taskAssignPolicy.ensureValid(input.projectId, input.assignedUserId)
 
         const task = Task.create({
             name: input.name,
@@ -54,7 +45,6 @@ export class CreateTaskUseCase {
             assignedUserId: input.assignedUserId
         })
 
-        
         const createdTask = await this.taskRepository.create(task)
 
         await this.activityRecorder.record({

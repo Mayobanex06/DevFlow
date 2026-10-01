@@ -1,5 +1,4 @@
 interface TaskProps {
-
     id?: number;
     name: string;
     description: string | null;
@@ -27,12 +26,27 @@ interface RestoreTaskProps {
     completedAt: Date | null;
     projectId: number;
     assignedUserId: number;
+}
 
+interface UpdateTaskDetails {
+    name?: string,
+    description?: string | null
 }
 
 export class Task {
-    get name() {
-        return this.props.name;
+    private constructor(private props: TaskProps) {}
+
+    static restore(props: RestoreTaskProps): Task {
+        return new Task({
+            ...props
+        });
+    }
+
+    static create(props: CreateTaskProps): Task {
+        return new Task({
+            ...props,
+            completedAt: null
+        });
     }
 
     get id() {
@@ -41,6 +55,11 @@ export class Task {
         }
         return this.props.id;
     }
+
+    get name() {
+        return this.props.name;
+    }
+
 
     get description() {
         return this.props.description;
@@ -58,41 +77,33 @@ export class Task {
         return this.props.completedAt
     }
 
-    private constructor(private props: TaskProps) { }
-
-    static restore(props: RestoreTaskProps): Task {
-        return new Task({
-            id: props.id,
-            name: props.name,
-            description: props.description,
-            createdAt: props.createdAt,
-            updateAt: props.updateAt,
-            completedAt: props.completedAt,
-            projectId: props.projectId,
-            assignedUserId: props.assignedUserId
-
-        });
+    complete(){
+        if (this.props.completedAt !== null && this.props.completedAt !== undefined){
+            throw new Error("Task already completed")
+        }
+        
+        this.props.completedAt = new Date()
     }
 
-    static create(props: CreateTaskProps): Task {
-        return new Task({
-            name: props.name,
-            description: props.description,
-            projectId: props.projectId,
-            assignedUserId: props.assignedUserId
-        });
+    updateDetails(details: UpdateTaskDetails){
+        if (details.name !== undefined){
+            this.props.name = details.name
+        }
+
+        if (details.description !== undefined){
+            this.props.description = details.description
+        }
     }
 
-    rename(data: string) {
-        this.props.name = data
-    }
+    assignTo(userId: number) {
+        if (this.props.assignedUserId === userId) {
+            // TODO [ERRORS]: Replace with appropriate conflict/domain error.
+            throw new Error(
+                "Task is already assigned to this user"
+            )
+        }
 
-    changeDescription(Data: string | null) {
-        this.props.description = Data
-    }
-
-    changeAssignedUserId(Data: number) {
-        this.props.assignedUserId = Data
+        this.props.assignedUserId = userId
     }
 
 }

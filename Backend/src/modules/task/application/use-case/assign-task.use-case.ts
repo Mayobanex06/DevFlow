@@ -1,8 +1,9 @@
-import { TaskRepository } from "../domain/task.repository.js";
-import { UserRepository } from "../../users/domain/user.repository.js";
-import { NotFoundError } from "../../../shared/errors/not-found-error.js";
-import { ActivityRecorder } from "../../activities/domain/activity-recorder.js";
-import { ActivityEntityType, ActivityType } from "../../activities/domain/activities.entity.js";
+import { NotFoundError } from "../../../../shared/errors/not-found-error.js"
+import { ActivityEntityType, ActivityType } from "../../../activities/domain/activities.entity.js"
+import { ActivityRecorder } from "../../../activities/domain/activity-recorder.js"
+import { TaskAssignPolicy } from "../../domain/task.policy.js"
+import { TaskRepository } from "../../domain/task.repository.js"
+
 
 interface AssignTaskInput {
     taskId: number,
@@ -13,7 +14,7 @@ interface AssignTaskInput {
 export class AssignTaskUseCase {
     constructor(
         private taskRepository: TaskRepository,
-        private userRepository: UserRepository,
+        private taskAssignPolicy: TaskAssignPolicy,
         private activityRecorder: ActivityRecorder
     ){}
 
@@ -28,16 +29,11 @@ export class AssignTaskUseCase {
             )
         }
 
-        const user = await this.userRepository.findById(input.userIdAssign)
+        await this.taskAssignPolicy.ensureValid(task.projectId, input.userIdAssign)
 
-        if(!user) {
-            throw new NotFoundError(
-                "USER_NOT_FOUND",
-                "User not found"
-            )
-        }
+        task.assignTo(input.userIdAssign)
 
-        await this.taskRepository.assignTask(input.taskId, input.userIdAssign)
+        await this.taskRepository.assignTask(task)
 
         await this.activityRecorder.record({
             type: ActivityType.TASK_ASSIGNED,

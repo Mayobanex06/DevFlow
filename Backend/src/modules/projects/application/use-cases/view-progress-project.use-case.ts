@@ -37,7 +37,7 @@ export class ViewProgressProjectUseCase {
 
         const tasks = await this.taskRepository.getProjectTaskStats(input.projectId)
         
-        const progress = tasks.totalTasks == 0 
+        const progress = tasks.totalTasks === 0 
         ? 0
         : Math.round(tasks.completedTasks / tasks.totalTasks * 100)
 

@@ -1,8 +1,8 @@
-import { Task } from "../domain/task.entity.js";
-import { TaskRepository } from "../domain/task.repository.js";
-import { NotFoundError } from "../../../shared/errors/not-found-error.js";
-import { ActivityRecorder } from "../../activities/domain/activity-recorder.js";
-import { ActivityEntityType, ActivityType } from "../../activities/domain/activities.entity.js";
+import { NotFoundError } from "../../../../shared/errors/not-found-error.js";
+import { ActivityEntityType, ActivityType } from "../../../activities/domain/activities.entity.js";
+import { ActivityRecorder } from "../../../activities/domain/activity-recorder.js";
+import { Task } from "../../domain/task.entity.js";
+import { TaskRepository } from "../../domain/task.repository.js";
 
 interface UpdateTaskUseInput {
     id: number;
@@ -30,21 +30,15 @@ export class UpdateTaskUseCase {
             )
         }
 
-        if (input.name !== undefined) {
-            task.rename(input.name)
+        if (input.name === undefined && input.description === undefined) {
+            // TODO [ERRORS]: Replace with appropriate validation error.
+            throw new Error("No fields provided to update task")
         }
 
-        if (input.description !== undefined) {
-            task.changeDescription(input.description)
-        }
-
-        const hasChanges =
-            input.name !== undefined ||
-            input.description !== undefined
-
-        if (!hasChanges) {
-            throw new Error("No fields provided to update");
-        }
+        task.updateDetails({
+            name: input.name,
+            description: input.description
+        })
 
         const updatedTask = await this.taskRepository.update(task)
 

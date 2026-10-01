@@ -43,10 +43,8 @@ export class CreateProjectUseCase {
         const project = Project.create({
             name: input.name,
             description: input.description,
-            state: 1,
             clientId: input.clientId,
             projectManagerId: input.projectManagerId,
-            completedAt: null
         })
 
         const createdProject = await this.projectRepository.create(project)

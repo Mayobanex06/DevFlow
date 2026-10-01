@@ -47,7 +47,7 @@ export class PostgresTaskRepository implements TaskRepository {
         return this.toDomain(result.rows[0])
     }
 
-    async findAllAssigned(userId: number): Promise<Task[]> {
+    async findByAssignedUserId(userId: number): Promise<Task[]> {
         
         const result = await db.query(`
             SELECT *
@@ -70,6 +70,65 @@ export class PostgresTaskRepository implements TaskRepository {
             `)
 
         return result.rows.map((row: TaskRow) => this.toDomain(row))
+    }
+
+    async findByProjectManagerId(projectManagerId: number): Promise<Task[]> {
+        
+        const result = await db.query(`
+            SELECT t.*
+            FROM tasks t
+
+            INNER JOIN projects p
+                ON p.id = t.project_id
+
+            WHERE p.project_manager_id = $1;`,
+            [
+                projectManagerId
+            ]
+        )
+
+        return result.rows.map((row: TaskRow) => this.toDomain(row))
+    }
+
+    async findByUserTeams(userId: number): Promise<Task[]> {
+        
+        const result = await db.query(`
+            SELECT DISTINCT t.*
+            FROM task t 
+
+            INNER JOIN teams_projects tp
+                ON t.project_id = tp.project_id
+            
+            INNER JOIN users_teams ut
+                ON ut.team_id = tp.team_id
+
+            WHERE ut.user_id = $1
+            `, 
+            [
+                userId
+            ]
+        )
+
+        return result.rows.map((row: TaskRow) => (this.toDomain(row)))
+    }
+
+    async findByClientId(clientId: number): Promise<Task[]> {
+        
+        const result = await db.query(`
+            SELECT t.*
+            FROM task t
+            
+            INNER JOIN projects p 
+                ON t.project_id = p.id
+            
+            WHERE p.client_id = $1
+            `,
+            [
+                clientId
+            ]
+        )
+
+        return result.rows.map((row: TaskRow) => (this.toDomain(row)))
     }
 
     async create(task: Task): Promise<Task> {
@@ -101,37 +160,34 @@ export class PostgresTaskRepository implements TaskRepository {
             SET
                 name = $1,
                 description = $2,
-                project_id = $3,
-                assigned_user_id = $4
-            WHERE id = $5
+            WHERE id = $3
             RETURNING *
             `,
             [
                 task.name,
                 task.description,
-                task.projectId,
-                task.assignedUserId,
                 task.id
             ]
         )
         return this.toDomain(result.rows[0])
     }
 
-    async changeState(id: number): Promise<void> {
+    async complete(task: Task): Promise<void> {
 
         await db.query(`
             UPDATE tasks
             SET
-                completed_at = NOW()
+                completed_at = $2
             WHERE id = $1
             `,
             [
-                id
+                task.id,
+                task.completedAt
             ]
         )
     }
 
-    async assignTask(taskId: number, userId: number): Promise<void> {
+    async assignTask(task: Task): Promise<void> {
 
         await db.query(`
             UPDATE tasks
@@ -140,8 +196,8 @@ export class PostgresTaskRepository implements TaskRepository {
             WHERE id = $2
             `,
             [
-                userId,
-                taskId
+                task.assignedUserId,
+                task.id
             ]
         )
     }
