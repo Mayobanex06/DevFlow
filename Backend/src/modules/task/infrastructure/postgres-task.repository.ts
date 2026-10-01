@@ -159,7 +159,7 @@ export class PostgresTaskRepository implements TaskRepository {
             UPDATE tasks
             SET
                 name = $1,
-                description = $2,
+                description = $2
             WHERE id = $3
             RETURNING *
             `,
