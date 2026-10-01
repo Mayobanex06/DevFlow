@@ -9,7 +9,7 @@ interface CompleteTaskInput {
     userId: number
 }
 
-export class ChangeStateTaskUseCase {
+export class CompleteTaskUseCase {
     constructor(
         private taskRepository: TaskRepository,
         private activityRecorder: ActivityRecorder

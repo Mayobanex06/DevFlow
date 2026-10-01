@@ -94,7 +94,7 @@ export class PostgresTaskRepository implements TaskRepository {
         
         const result = await db.query(`
             SELECT DISTINCT t.*
-            FROM task t 
+            FROM tasks t 
 
             INNER JOIN teams_projects tp
                 ON t.project_id = tp.project_id
@@ -116,7 +116,7 @@ export class PostgresTaskRepository implements TaskRepository {
         
         const result = await db.query(`
             SELECT t.*
-            FROM task t
+            FROM tasks t
             
             INNER JOIN projects p 
                 ON t.project_id = p.id

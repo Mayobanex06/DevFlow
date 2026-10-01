@@ -12,7 +12,7 @@ export class DefaultTaskAssignPolicy implements TaskAssignPolicy {
         private roleRepository: RoleRepository
     ) {}
 
-    async ensureValid(projectId: number, userId: number){
+    async ensureValid(projectId: number, userId: number): Promise<void> {
 
         const user = await this.userRepository.findById(userId)
 
