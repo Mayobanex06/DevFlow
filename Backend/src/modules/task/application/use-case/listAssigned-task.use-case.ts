@@ -1,7 +1,8 @@
-import { NotFoundError } from "../../../shared/errors/not-found-error.js";
-import { UserRepository } from "../../users/domain/user.repository.js";
-import { Task } from "../domain/task.entity.js";
-import { TaskRepository } from "../domain/task.repository.js";
+import { NotFoundError } from "../../../../shared/errors/not-found-error.js";
+import { UserRepository } from "../../../users/domain/user.repository.js";
+import { Task } from "../../domain/task.entity.js";
+import { TaskRepository } from "../../domain/task.repository.js";
+
 
 interface ListAssignedTaskInput {
     userId: number;
@@ -23,7 +24,7 @@ export class ListAssignedTaskUseCase {
                 "User not found"
             )
         }
-        return this.taskRepository.findAllAssigned(input.userId)
+        return this.taskRepository.findByAssignedUserId(input.userId)
 
     }
 }
