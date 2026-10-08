@@ -1,5 +1,5 @@
-import { Team } from "../domain/team.entity.js";
-import { TeamRepository } from "../domain/team.repository.js";
+import { Team } from "../../domain/team.entity.js";
+import { TeamRepository } from "../../domain/team.repository.js";
 
 export class ListTeamsUseCase {
     constructor (

@@ -1,4 +1,4 @@
-import { TeamRepository } from "../domain/team.repository.js";
+import { TeamRepository } from "../../domain/team.repository.js";
 
 interface HasMemberTeamInput {
     teamId: number;

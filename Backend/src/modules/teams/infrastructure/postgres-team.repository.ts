@@ -16,7 +16,8 @@ interface UserRows {
     auth_user_id: string,
     name: string,
     created_at: Date,
-    role_id: number
+    role_id: number,
+    client_id: number | null
 }
 
 export class PostgresTeamRepository implements TeamRepository {
@@ -36,11 +37,12 @@ export class PostgresTeamRepository implements TeamRepository {
             authUserId: row.auth_user_id,
             name: row.name,
             createdAt: row.created_at,
-            roleId: row.role_id
+            roleId: row.role_id,
+            clientId: row.client_id
         })
     }
 
-    async findById(id: number): Promise<Team | null> {
+    async findById(id: number): Promise<Team> {
 
         const result = await db.query(`
             SELECT *
@@ -51,11 +53,6 @@ export class PostgresTeamRepository implements TeamRepository {
                 id
             ]
         )
-
-        if(result.rows.length === 0){
-            return null
-        }
-
 
         return this.toDomain(result.rows[0])
     }
@@ -72,6 +69,26 @@ export class PostgresTeamRepository implements TeamRepository {
             [
                 team.name,
                 team.description
+            ]
+        )
+
+        return this.toDomain(result.rows[0])
+    }
+
+    async update(team: Team): Promise<Team> {
+        
+        const result = await db.query(`
+            UPDATE team
+            SET 
+            name = $1
+            description = $2
+            WHERE id = $3
+            RETURNING *
+            `,
+            [
+                team.name,
+                team.description,
+                team.id
             ]
         )
 

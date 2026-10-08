@@ -1,7 +1,9 @@
-import { ConflictError } from "../../../shared/errors/conflict-error.js";
-import { NotFoundError } from "../../../shared/errors/not-found-error.js";
-import { UserRepository } from "../../users/domain/user.repository.js";
-import { TeamRepository } from "../domain/team.repository.js";
+import { ConflictError } from "../../../../shared/errors/conflict-error.js"
+import { NotFoundError } from "../../../../shared/errors/not-found-error.js"
+import { UserRepository } from "../../../users/domain/user.repository.js"
+import { TeamMemberPolicy } from "../../domain/team.policy.js"
+import { TeamRepository } from "../../domain/team.repository.js"
+
 
 interface addMemberTeamInput {
     teamId: number,
@@ -11,7 +13,7 @@ interface addMemberTeamInput {
 export class AddMemberToTeamUseCase {
     constructor(
         private teamRepository: TeamRepository,
-        private userRepository: UserRepository
+        private teamMemberPolicy: TeamMemberPolicy
     ) {}
 
     async execute(input: addMemberTeamInput): Promise<void> {
@@ -25,14 +27,7 @@ export class AddMemberToTeamUseCase {
             )
         }
 
-        const user = await this.userRepository.findById(input.userId)
-
-        if (!user){
-            throw new NotFoundError(
-                "USER_NOT_FOUND",
-                "User not found"
-            )
-        }
+        await this.teamMemberPolicy.ensureValid(input.userId)
 
         const userHasTeam = await this.teamRepository.hasMember(input.teamId, input.userId)
 

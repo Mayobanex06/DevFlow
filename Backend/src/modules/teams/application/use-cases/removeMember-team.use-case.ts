@@ -1,6 +1,6 @@
-import { NotFoundError } from "../../../shared/errors/not-found-error.js";
-import { UserRepository } from "../../users/domain/user.repository.js";
-import { TeamRepository } from "../domain/team.repository.js";
+import { NotFoundError } from "../../../../shared/errors/not-found-error.js";
+import { UserRepository } from "../../../users/domain/user.repository.js";
+import { TeamRepository } from "../../domain/team.repository.js";
 
 interface RemoveMemberTeamInput {
     teamId: number,

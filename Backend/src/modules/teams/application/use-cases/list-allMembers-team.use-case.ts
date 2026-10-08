@@ -1,6 +1,6 @@
-import { NotFoundError } from "../../../shared/errors/not-found-error.js";
-import { User } from "../../users/domain/user.entity.js";
-import { TeamRepository } from "../domain/team.repository.js";
+import { NotFoundError } from "../../../../shared/errors/not-found-error.js";
+import { User } from "../../../users/domain/user.entity.js";
+import { TeamRepository } from "../../domain/team.repository.js";
 
 interface ListAllMembersTeamInput {
     teamId: number

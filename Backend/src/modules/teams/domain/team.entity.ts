@@ -1,20 +1,25 @@
 interface TeamProps {
     id?: number,
     name: string,
-    description: string,
+    description: string | null,
     createdAt?: Date
 }
 
 interface CreateTeamProps {
     name: string,
-    description: string,
+    description: string | null,
 }
 
 interface RestoreTeamProps {
     id: number,
     name: string,
-    description: string,
+    description: string | null,
     createdAt: Date
+}
+
+interface UpdateTeamDetails {
+    name?: string,
+    description?: string | null,
 }
 
 export class Team {
@@ -22,17 +27,13 @@ export class Team {
 
     static create(props: CreateTeamProps){
         return new Team({
-            name: props.name,
-            description: props.description
+            ...props
         })
     }
 
     static restore(props: RestoreTeamProps){
         return new Team({
-            id: props.id,
-            name: props.name,
-            description: props.description,
-            createdAt: props.createdAt
+            ...props
         })
     }
 
@@ -51,5 +52,15 @@ export class Team {
 
     get description(){
         return this.props.description
+    }
+
+    updateDetails(details: UpdateTeamDetails){
+        if (details.name !== undefined){
+            this.props.name = details.name
+        }
+
+        if (details.description !== undefined){
+            this.props.description = details.description
+        }
     }
 }

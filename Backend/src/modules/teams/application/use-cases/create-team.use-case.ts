@@ -1,5 +1,6 @@
-import { Team } from "../domain/team.entity.js";
-import { TeamRepository } from "../domain/team.repository.js";
+import { Team } from "../../domain/team.entity.js"
+import { TeamRepository } from "../../domain/team.repository.js"
+
 
 interface CreateTeamInput {
     name: string,

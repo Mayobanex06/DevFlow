@@ -3,11 +3,11 @@ import { PostgresUserRepository } from "../../users/infrastructure/postgres-user
 import { GetTeamUseCase } from "../application/get-team.use-case.js";
 import { PostgresTeamRepository } from "../infrastructure/postgres-team.repository.js";
 import { CreateTeamUseCase } from "../application/create-team.use-case.js";
-import { ListTeamsUseCase } from "../application/list-teams.use-case.js";
-import { ListAllMembersTeamUseCase } from "../application/list-allMembers-team.use-case.js";
-import { HasMemberTeamUseCase } from "../application/hasMember-team.use-case.js";
+import { ListTeamsUseCase } from "../application/use-cases/list-teams.use-case.js";
+import { ListAllMembersTeamUseCase } from "../application/use-cases/list-allMembers-team.use-case.js";
+import { HasMemberTeamUseCase } from "../application/use-cases/hasMember-team.use-case.js";
 import { AddMemberToTeamUseCase } from "../application/addMember-team.use-case.js";
-import { RemoveMemberFromTeamUseCase } from "../application/removeMember-team.use-case.js";
+import { RemoveMemberFromTeamUseCase } from "../application/use-cases/removeMember-team.use-case.js";
 import { TeamController } from "./team.controller.js";
 
 const teamRepository = new PostgresTeamRepository()
