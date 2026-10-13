@@ -23,6 +23,10 @@ interface RestoreUserProps {
     clientId: number | null;
 }
 
+interface UpdateUserDetails {
+    name?: string
+}
+
 export class User {
     private constructor(
         private props: UserProps
@@ -30,7 +34,8 @@ export class User {
 
     static create(props: CreateUserProps){
         return new User({
-            ...props
+            ...props,
+            name: User.validateName(props.name)
         })
     }
 
@@ -63,5 +68,32 @@ export class User {
 
     get clientId() {
     return this.props.clientId;
+    }
+
+    private static validateName(name: string){
+        const normalized = name.trim()
+
+        if (normalized.length === 0){
+            // TODO [ERRORS]: Replace with domain validation error.
+            throw new Error("User name cannot be empty")
+        }
+
+        return normalized
+    }
+
+    updateDetails(details: UpdateUserDetails){
+
+        if (details.name !== undefined){
+            const normalized = User.validateName(details.name)
+            this.props.name = normalized
+        }
+    }
+
+    changeRole(rolId: number): void{
+        this.props.roleId = rolId
+    }
+
+    changeClientId(clientId: number | null): void{
+        this.props.clientId = clientId
     }
 }

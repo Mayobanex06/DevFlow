@@ -1,3 +1,4 @@
+import { NotFoundError } from "../../../shared/errors/not-found-error.js";
 import { Client } from "../domain/client.entity.js";
 import { ClientRepository } from "../domain/client.repository.js";
 
@@ -10,8 +11,17 @@ export class GetClientUseCase {
         private clientRepository: ClientRepository
     ) {}
 
-    async execute(input: GetClientInput): Promise<Client | null> {
+    async execute(input: GetClientInput): Promise<Client> {
 
-        return this.clientRepository.findById(input.id)
+        const client = await this.clientRepository.findById(input.id)
+
+        if (!client){
+            throw new NotFoundError(
+                "CLIENT_NOT_FOUND",
+                "Client not found"
+            )
+        }
+
+        return client
     }
 }

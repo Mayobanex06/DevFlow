@@ -14,7 +14,7 @@ export class GetTeamUseCase {
 
     async execute(input: GetTeamInput): Promise<Team> {
 
-        const team = this.teamRepository.findById(input.id)
+        const team = await this.teamRepository.findById(input.id)
 
         if (!team){
             throw new NotFoundError(

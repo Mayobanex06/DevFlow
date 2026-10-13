@@ -13,7 +13,6 @@ interface UpdateTeamInput {
 export class UpdateTeamUseCase {
     constructor (
         private teamRepository: TeamRepository,
-        private activityRecorder: ActivityRecorder
     ) {}
 
     async execute(input: UpdateTeamInput){

@@ -42,7 +42,7 @@ export class PostgresTeamRepository implements TeamRepository {
         })
     }
 
-    async findById(id: number): Promise<Team> {
+    async findById(id: number): Promise<Team | null> {
 
         const result = await db.query(`
             SELECT *
@@ -53,6 +53,10 @@ export class PostgresTeamRepository implements TeamRepository {
                 id
             ]
         )
+
+        if (result.rows.length === 0) {
+            return null
+        }
 
         return this.toDomain(result.rows[0])
     }
@@ -78,7 +82,7 @@ export class PostgresTeamRepository implements TeamRepository {
     async update(team: Team): Promise<Team> {
         
         const result = await db.query(`
-            UPDATE team
+            UPDATE teams
             SET 
             name = $1
             description = $2
@@ -108,7 +112,7 @@ export class PostgresTeamRepository implements TeamRepository {
     async findAllMembers(teamId: number): Promise<User[]> {
 
         const result = await db.query(`
-            SELECT u.id, u.auth_user_id, u.name, u.created_at, u.role_id
+            SELECT u.id, u.auth_user_id, u.name, u.created_at, u.role_id, u.client_id
             FROM users_teams ut
             JOIN users u 
                 ON ut.user_id = u.id

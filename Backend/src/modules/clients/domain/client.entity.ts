@@ -20,14 +20,20 @@ interface RestoreClientProps {
     createdAt: Date
 }
 
+interface UpdateClientDetails {
+    name?: string,
+    email?: string,
+    phone?: string | null
+}
+
 export class Client {
     private constructor(private props: ClientProps) {}
 
     static create(props: CreateClientProps): Client {
         return new Client({
-            name: props.name,
-            email: props.email,
-            phone: props.phone,
+            ...props,
+            name: this.validateName(props.name),
+            email: this.validateEmail(props.email)
         })
     }
 
@@ -39,6 +45,35 @@ export class Client {
             phone: props.phone,
             createdAt: props.createdAt
         })
+    }
+
+    private static validateName(name: string): string{
+        const normalized = name.trim()
+
+        if (normalized.length === 0){
+            // TODO [ERRORS]: Replace with domain validation error.
+            throw new Error("Client name cannot be empty")
+        }
+
+        return normalized
+    }
+
+    private static validateEmail(email: string): string {
+        const normalized = email.trim().toLowerCase()
+
+        if (normalized.length === 0) {
+            // TODO [ERRORS]: Replace with domain validation error.
+            throw new Error("Client email cannot be empty")
+        }
+
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+
+        if (!emailRegex.test(normalized)) {
+            // TODO [ERRORS]: Replace with domain validation error.
+            throw new Error("Invalid client email format")
+        }
+
+        return normalized
     }
 
     get id(){
@@ -60,5 +95,19 @@ export class Client {
 
     get phone(){
         return this.props.phone
+    }
+
+    updateDetails(details: UpdateClientDetails): void {
+        if (details.name !== undefined){
+            this.props.name = Client.validateName(details.name)
+        }
+
+        if (details.email !== undefined){
+            this.props.email = Client.validateEmail(details.email)
+        }
+
+        if (details.phone !== undefined){
+            this.props.phone = details.phone
+        }
     }
 }

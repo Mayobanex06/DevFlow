@@ -1,5 +1,7 @@
 import { ConflictError } from "../../../../shared/errors/conflict-error.js"
 import { NotFoundError } from "../../../../shared/errors/not-found-error.js"
+import { ActivityType } from "../../../activities/domain/activities.entity.js"
+import { ActivityRecorder } from "../../../activities/domain/activity-recorder.js"
 import { UserRepository } from "../../../users/domain/user.repository.js"
 import { TeamMemberPolicy } from "../../domain/team.policy.js"
 import { TeamRepository } from "../../domain/team.repository.js"
@@ -13,7 +15,8 @@ interface addMemberTeamInput {
 export class AddMemberToTeamUseCase {
     constructor(
         private teamRepository: TeamRepository,
-        private teamMemberPolicy: TeamMemberPolicy
+        private teamMemberPolicy: TeamMemberPolicy,
+        private activityRecorder: ActivityRecorder
     ) {}
 
     async execute(input: addMemberTeamInput): Promise<void> {

@@ -52,4 +52,46 @@ export class PostgresClientRepository implements ClientRepository {
         return result.rows.map(row => this.toDomain(row))
 
     }
+
+    async create(client: Client): Promise<Client> {
+        
+        const result = await db.query(`
+            INSERT INTO clients (
+            name,
+            email,
+            phone
+            ) VALUES ($1, $2, $3)
+            RETURNING * 
+            `,
+            [
+                client.name,
+                client.email,
+                client.phone
+            ]
+        )
+
+        return this.toDomain(result.rows[0])
+    }
+
+    async update(client: Client): Promise<Client> {
+        
+        const result = await db.query(`
+            UPDATE clients
+            SET
+            name = $1,
+            email = $2,
+            phone = $3
+            WHERE id = $4
+            RETURNING *
+            `, 
+            [
+                client.name,
+                client.email,
+                client.phone,
+                client.id
+            ]
+        )
+
+        return this.toDomain(result.rows[0])
+    }
 }

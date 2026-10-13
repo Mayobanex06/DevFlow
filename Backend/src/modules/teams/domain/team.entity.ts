@@ -56,7 +56,14 @@ export class Team {
 
     updateDetails(details: UpdateTeamDetails){
         if (details.name !== undefined){
-            this.props.name = details.name
+            const name = details.name.trim()
+
+            if (name.length === 0) {
+                // TODO [ERRORS]: Replace with domain validation error.
+                throw new Error("Team name cannot be empty")
+            }
+
+            this.props.name = name
         }
 
         if (details.description !== undefined){
