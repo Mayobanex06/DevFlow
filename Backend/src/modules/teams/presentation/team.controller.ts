@@ -8,20 +8,20 @@ import { ListTeamsUseCase } from "../application/list-teams.use-case.js"
 import { RemoveMemberFromTeamUseCase } from "../application/removeMember-team.use-case.js"
 import { NotFoundError } from "../../../shared/errors/not-found-error.js"
 
-interface CreateTeamBody {
+export interface CreateTeamBody {
     name: string,
     description: string
 }
 
-interface IdParams {
+export interface IdParams {
     id: number
 }
 
-interface TeamIdParams {
+export interface TeamIdParams {
     teamId: number
 }
 
-interface TeamUserIdParams {
+export interface TeamUserIdParams {
     teamId: number,
     userId: number
 }

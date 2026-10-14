@@ -5,10 +5,14 @@ import { userRoutes } from "../../modules/users/presentation/user.routes.js";
 import { authorizationRoutes } from "../../modules/authorization/presentation/authorization.routes.js";
 import { teamRoutes } from "../../modules/teams/presentation/team.routes.js"
 import { documentRoutes } from "../../modules/documents/presentation/document.routes.js";
+import { taskRoutes } from "../../modules/task/presentation/task.routes.js";
+import { authenticate } from "../auth/auth-container.js";
 
 export async function apiRoutes(
     fastify: FastifyInstance
 ) {
+    fastify.addHook("preHandler", authenticate)
+
     fastify.register(projectRoutes, {
         prefix: "/projects"
     });
@@ -31,5 +35,9 @@ export async function apiRoutes(
 
     fastify.register(documentRoutes, {
         prefix: "/documents"
+    })
+
+    fastify.register(taskRoutes, {
+        prefix: "/tasks"
     })
 }

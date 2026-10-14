@@ -6,15 +6,15 @@ import { ListAssignableUsersUseCase } from "../application/list-user-assignable-
 import { GetUserByAuthUserIdUseCase } from "../application/get-auth-user.use-case.js";
 import { NotFoundError } from "../../../shared/errors/not-found-error.js";
 
-interface UserIdParams {
+export interface UserIdParams {
     id: number
 }
 
-interface UserAuthIdParams {
+export interface UserAuthIdParams {
     authUserId: string
 }
 
-interface CreateUserBody {
+export interface CreateUserBody {
     authUserId: string,
     name: string,
     roleId: number

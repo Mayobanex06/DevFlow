@@ -5,3 +5,5 @@ export interface CommentRepository {
     create(comment: Comment): Promise<Comment> 
     update(comment: Comment): Promise<Comment> 
 }
+
+

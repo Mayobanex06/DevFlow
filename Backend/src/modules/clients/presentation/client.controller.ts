@@ -2,7 +2,7 @@ import { FastifyReply, FastifyRequest } from "fastify";
 import { GetClientUseCase } from "../application/get-client.use-case.js";
 import { ListClientsUseCase } from "../application/list-clients.use-case.js";
 
-interface ClientParams {
+export interface ClientParams {
     id: number
 }
 

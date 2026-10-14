@@ -12,6 +12,7 @@
   "keywords": [],
   "type": "module",
   "dependencies": {
+    "@fastify/cookie": "^11.1.2",
     "@neondatabase/neon-js": "^0.7.0-beta",
     "dotenv": "^17.4.2",
     "fastify": "^5.12.1",

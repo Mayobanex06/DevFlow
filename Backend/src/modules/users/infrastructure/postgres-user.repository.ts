@@ -7,7 +7,8 @@ interface UserRows {
     auth_user_id: string,
     name: string,
     created_at: Date,
-    role_id: number
+    role_id: number,
+    client_id: number
 }
 
 export class PostgresUserRepository implements UserRepository {
@@ -17,7 +18,10 @@ export class PostgresUserRepository implements UserRepository {
             authUserId: row.auth_user_id,
             name: row.name,
             createdAt: row.created_at,
-            roleId: row.role_id
+            roleId: row.role_id,
+            clientId: row.client_id === null
+            ? null
+            : Number(row.client_id)
         })
     }
 
@@ -90,13 +94,14 @@ export class PostgresUserRepository implements UserRepository {
     async create(user: User): Promise<User> {
 
         const result = await db.query(`
-            INSERT INTO users (auth_user_id, name, role_id)
-            VALUES ($1, $2, $3)
+            INSERT INTO users (auth_user_id, name, role_id, client_id)
+            VALUES ($1, $2, $3, $4)
             RETURNING *
         `, [
             user.authUserId,
             user.name,
             user.roleId,
+            user.clientId
         ])
 
         return this.toDomain(result.rows[0])

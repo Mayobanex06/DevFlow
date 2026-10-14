@@ -19,21 +19,29 @@ CREATE TABLE IF NOT EXISTS permissions (
     description TEXT
 ); 
 
-CREATE TABLE IF NOT EXISTS projects (
+CREATE TABLE projects (
     id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-    name VARCHAR(150) NOT NULL, 
+
+    name VARCHAR(150) NOT NULL,
     description TEXT,
-    state SMALLINT NOT NULL DEFAULT 1
-        CHECK(state IN (0, 1, 2, 3)),  
-    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(), 
+
+    state SMALLINT NOT NULL
+        CHECK (state IN (0, 1, 2, 3)),
+
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     completed_at TIMESTAMPTZ,
 
     client_id BIGINT NOT NULL,
+    project_manager_id BIGINT NOT NULL,
 
-        CONSTRAINT fk_projects_clients
-            FOREIGN KEY (client_id)
-            REFERENCES clients(id)
+    CONSTRAINT fk_projects_client
+        FOREIGN KEY (client_id)
+        REFERENCES clients(id),
+
+    CONSTRAINT fk_projects_project_manager
+        FOREIGN KEY (project_manager_id)
+        REFERENCES users(id)
 );
 
 CREATE TABLE IF NOT EXISTS users (
@@ -43,14 +51,19 @@ CREATE TABLE IF NOT EXISTS users (
 
     auth_user_id UUID NOT NULL UNIQUE,
     role_id BIGINT NOT NULL,
+    client_id BIGINT,
 
-        CONSTRAINT fk_users_neonauth
-            FOREIGN KEY (auth_user_id)
-            REFERENCES neon_auth."user"(id),
+    CONSTRAINT fk_users_neonauth
+        FOREIGN KEY (auth_user_id)
+        REFERENCES neon_auth."user"(id),
 
-        CONSTRAINT fk_users_roles
-            FOREIGN KEY (role_id)
-            REFERENCES roles(id)
+    CONSTRAINT fk_users_roles
+        FOREIGN KEY (role_id)
+        REFERENCES roles(id),
+
+    CONSTRAINT fk_users_clients
+        FOREIGN KEY (client_id)
+        REFERENCES clients(id)
 );
 
 
@@ -124,27 +137,50 @@ CREATE TABLE IF NOT EXISTS comments (
 
 );
 
-CREATE TABLE IF NOT EXISTS activity_history (
-    id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY, 
-    action VARCHAR(100) NOT NULL,
+CREATE TABLE IF NOT EXISTS activities (
+    id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    type VARCHAR(100) NOT NULL,
     description TEXT,
+    entity_type VARCHAR(50) NOT NULL,
+    entity_id BIGINT NOT NULL,
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
 
     user_id BIGINT NOT NULL,
     project_id BIGINT NOT NULL,
-    task_id BIGINT,
 
-        CONSTRAINT fk_activity_users
-            FOREIGN KEY (user_id)
-            REFERENCES users(id),
-        
-        CONSTRAINT fk_activity_projects
-            FOREIGN KEY (project_id)
-            REFERENCES projects(id),
-        
-        CONSTRAINT fk_activity_tasks
-            FOREIGN KEY (task_id)
-            REFERENCES tasks(id)
+    CONSTRAINT chk_activities_type
+        CHECK (
+            type IN (
+                'PROJECT_CREATED',
+                'PROJECT_COMPLETED',
+                'TASK_CREATED',
+                'TASK_COMPLETED',
+                'TEAM_ADDED',
+                'TEAM_REMOVED',
+                'DOCUMENT_ATTACHED',
+                'DOCUMENT_DELETED',
+                'COMMENT_CREATED'
+            )
+        ),
+
+    CONSTRAINT chk_activities_entity_type
+        CHECK (
+            entity_type IN (
+                'PROJECT',
+                'TASK',
+                'TEAM',
+                'DOCUMENT',
+                'COMMENT'
+            )
+        ),
+
+    CONSTRAINT fk_activities_users
+        FOREIGN KEY (user_id)
+        REFERENCES users(id),
+
+    CONSTRAINT fk_activities_projects
+        FOREIGN KEY (project_id)
+        REFERENCES projects(id)
 );
 
 

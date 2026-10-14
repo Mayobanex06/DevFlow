@@ -54,6 +54,10 @@ export class Task {
         return this.props.assignedUserId
     }
 
+    get completedAt(){
+        return this.props.completedAt
+    }
+
     private constructor(private props: TaskProps) { }
 
     static restore(props: RestoreTaskProps): Task {

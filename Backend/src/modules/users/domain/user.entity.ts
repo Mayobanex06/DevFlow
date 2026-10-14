@@ -3,13 +3,15 @@ interface UserProps {
     authUserId: string,
     name: string,
     createdAt?: Date,
-    roleId: number
+    roleId: number,
+    clientId: number | null;
 }
 
 interface CreateUserProps {
     authUserId: string,
     name: string,
-    roleId: number
+    roleId: number,
+    clientId: number | null
 }
 
 interface RestoreUserProps {
@@ -17,7 +19,8 @@ interface RestoreUserProps {
     authUserId: string,
     name: string,
     createdAt: Date,
-    roleId: number
+    roleId: number,
+    clientId: number | null;
 }
 
 export class User {
@@ -27,19 +30,13 @@ export class User {
 
     static create(props: CreateUserProps){
         return new User({
-            authUserId: props.authUserId,
-            name: props.name,
-            roleId: props.roleId
+            ...props
         })
     }
 
     static restore(props: RestoreUserProps){
         return new User({
-            id: props.id,
-            authUserId: props.authUserId,
-            name: props.name,
-            createdAt: props.createdAt,
-            roleId: props.roleId
+            ...props
         })
     }
 
@@ -64,4 +61,7 @@ export class User {
         return this.props.roleId
     }
 
+    get clientId() {
+    return this.props.clientId;
+    }
 }

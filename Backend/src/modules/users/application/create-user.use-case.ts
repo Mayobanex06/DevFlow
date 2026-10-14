@@ -10,6 +10,7 @@ interface CreateUserInput {
     authUserId: string,
     name: string,
     roleId: number,
+    clientId: number | null
 }
 
 export class CreateUserUseCase {
@@ -55,9 +56,8 @@ export class CreateUserUseCase {
         }
 
         const user = User.create({
-            authUserId: input.authUserId,
-            name: input.name,
-            roleId: input.roleId
+            ...input,
+            clientId: input.clientId ?? null
         })
 
         return this.userRepository.create(user)

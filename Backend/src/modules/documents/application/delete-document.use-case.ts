@@ -1,13 +1,17 @@
 import { NotFoundError } from "../../../shared/errors/not-found-error.js";
+import { ActivityEntityType, ActivityType } from "../../activities/domain/activities.entity.js";
+import { ActivityRecorder } from "../../activities/domain/activity-recorder.js";
 import { DocumentRepository } from "../domain/document.repository.js";
 
 interface DeleteDocumentInput {
     id: number
+    userId: number
 }
 
 export class DeleteDocumentUseCase {
     constructor(
-        private documentRepository: DocumentRepository
+        private documentRepository: DocumentRepository,
+        private activityRecorder: ActivityRecorder
     ) {}
 
     async execute(input: DeleteDocumentInput): Promise<void> {
@@ -21,6 +25,14 @@ export class DeleteDocumentUseCase {
             )
         }
 
-        return this.documentRepository.delete(input.id) 
+        await this.documentRepository.delete(input.id) 
+
+        await this.activityRecorder.record({
+            type: ActivityType.DOCUMENT_DELETED,
+            entityType: ActivityEntityType.DOCUMENT,
+            entityId: document.id,
+            projectId: document.projectId,
+            userId: input.userId
+        })
     }
 }

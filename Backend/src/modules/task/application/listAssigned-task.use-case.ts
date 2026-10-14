@@ -12,7 +12,7 @@ export class ListAssignedTaskUseCase {
         private userRepository: UserRepository
     ) { }
 
-    async excute(input: ListAssignedTaskInput): Promise<Task[]> {
+    async execute(input: ListAssignedTaskInput): Promise<Task[]> {
         const user = await this.userRepository.findById(
             input.userId
         )
