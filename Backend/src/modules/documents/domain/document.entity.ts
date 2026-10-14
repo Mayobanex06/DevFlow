@@ -37,33 +37,19 @@ export class Document {
 
     static create(props: CreateDocumentProps): Document {
         return new Document({
-            name: props.name,
-            original_name: props.original_name,
-            storage_path: props.storage_path,
-            mime_type: props.mime_type,
-            size: props.size,
-            projectId: props.projectId,
-            taskId: props.taskId
+            ...props
         })
     }
 
     static restore(props: RestoreDocumentProps): Document {
         return new Document({
-            id: props.id,
-            name: props.name,
-            original_name: props.original_name,
-            storage_path: props.storage_path,
-            mime_type: props.mime_type,
-            size: props.size,
-            createdAt: props.createdAt,
-            projectId: props.projectId,
-            taskId: props.taskId
+            ...props
         })
     }
 
     get id(){
         if(this.props.id === undefined){
-            throw new Error("Document has not been persisted    ")
+            throw new Error("Document has not been persisted")
         }
 
         return this.props.id
@@ -78,7 +64,7 @@ export class Document {
     }
 
     get storage_path(){
-        return this.props.original_name
+        return this.props.storage_path
     }
 
     get mime_type(){
