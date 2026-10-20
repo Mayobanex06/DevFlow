@@ -69,6 +69,6 @@ export async function taskRoutes(fastify: FastifyInstance) {
         {
             preHandler: authorize(PermissionCode.TASK_CHANGE_STATE)
         },
-        taskController.changeState.bind(taskController)
+        taskController.complete.bind(taskController)
     );
 }

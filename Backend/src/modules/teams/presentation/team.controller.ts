@@ -1,12 +1,12 @@
 import { FastifyReply, FastifyRequest } from "fastify"
-import { AddMemberToTeamUseCase } from "../application/addMember-team.use-case.js"
-import { CreateTeamUseCase } from "../application/create-team.use-case.js"
-import { GetTeamUseCase } from "../application/get-team.use-case.js"
 import { HasMemberTeamUseCase } from "../application/use-cases/hasMember-team.use-case.js"
 import { ListAllMembersTeamUseCase } from "../application/use-cases/list-allMembers-team.use-case.js"
 import { ListTeamsUseCase } from "../application/use-cases/list-teams.use-case.js"
 import { RemoveMemberFromTeamUseCase } from "../application/use-cases/removeMember-team.use-case.js"
 import { NotFoundError } from "../../../shared/errors/not-found-error.js"
+import { CreateTeamUseCase } from "../application/use-cases/create-team.use-case.js"
+import { GetTeamUseCase } from "../application/use-cases/get-team.use-case.js"
+import { AddMemberToTeamUseCase } from "../application/use-cases/addMember-team.use-case.js"
 
 export interface CreateTeamBody {
     name: string,

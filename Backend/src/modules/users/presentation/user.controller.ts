@@ -17,7 +17,8 @@ export interface UserAuthIdParams {
 export interface CreateUserBody {
     authUserId: string,
     name: string,
-    roleId: number
+    roleId: number,
+    clientId: number | null
 }
 
 export class UserController {
@@ -38,7 +39,8 @@ export class UserController {
         const user = await this.createUserUseCase.execute({
             authUserId: body.authUserId,
             name: body.name,
-            roleId: body.roleId
+            roleId: body.roleId,
+            clientId: body.clientId
         })
 
         return reply.status(201).send({

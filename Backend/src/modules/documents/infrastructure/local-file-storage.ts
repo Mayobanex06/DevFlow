@@ -72,4 +72,8 @@ export class LocalFileStorage implements FileStorage{
         return content
     }
 
+    async delete(path: string): Promise<void> {
+        return
+    }
+
 }

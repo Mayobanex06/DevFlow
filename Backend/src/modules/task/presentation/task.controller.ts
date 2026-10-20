@@ -1,12 +1,13 @@
 import { FastifyReply, FastifyRequest } from "fastify";
-import { AssignTaskUseCase } from "../application/assign-task.use-case.js";
-import { ChangeStateTaskUseCase } from "../application/changeState-task.use-case.js";
-import { CreateTaskUseCase } from "../application/create-task-use-case.js";
-import { GetTaskUseCase } from "../application/get-task.use-case.js";
-import { ListTaskUseCase } from "../application/list-task.use-case.js";
-import { UpdateTaskUseCase } from "../application/update-task-use-case.js";
+import { GetTaskUseCase } from "../application/use-case/get-task.use-case.js";
+import { ListTaskUseCase } from "../application/use-case/list-task.use-case.js";
+import { ListAssignedTaskUseCase } from "../application/use-case/listAssigned-task.use-case.js";
+import { CreateTaskUseCase } from "../application/use-case/create-task-use-case.js";
+import { UpdateTaskUseCase } from "../application/use-case/update-task-use-case.js";
+import { AssignTaskUseCase } from "../application/use-case/assign-task.use-case.js";
+import { CompleteTaskUseCase } from "../application/use-case/complete-task.use-case.js";
 import { NotFoundError } from "../../../shared/errors/not-found-error.js";
-import { ListAssignedTaskUseCase } from "../application/listAssigned-task.use-case.js";
+
 
 export interface IdParams {
     id: number
@@ -36,7 +37,7 @@ export class TaskController {
         private createTaskUseCase: CreateTaskUseCase,
         private updateTaskUseCase: UpdateTaskUseCase,
         private assignTaskUseCase: AssignTaskUseCase,
-        private changeStateTaskUseCase: ChangeStateTaskUseCase
+        private completeTaskUseCase: CompleteTaskUseCase
     ) {}
 
     async get(request: FastifyRequest<{
@@ -46,15 +47,9 @@ export class TaskController {
         const id = request.params.id
 
         const task = await this.getTaskUseCase.execute({
-            id: id
+            id: id,
+            userId: request.user.id
         })
-
-        if(!task){
-            throw new NotFoundError(
-                "TASK_NOT_FOUND",
-                "Task not found"
-            )
-        }
 
         return reply.status(200).send({
             data: {
@@ -73,7 +68,9 @@ export class TaskController {
 
     async list(request: FastifyRequest, reply: FastifyReply){
 
-        const tasks = await this.listTasksUseCase.execute()
+        const tasks = await this.listTasksUseCase.execute({
+            userId: request.user.id
+        })
 
         return reply.status(200).send({
             data: tasks.map(task => ({
@@ -197,13 +194,13 @@ export class TaskController {
         })
     }
 
-    async changeState(request: FastifyRequest<{
+    async complete(request: FastifyRequest<{
         Params: IdParams
     }>, reply: FastifyReply) {
 
         const id = request.params.id
 
-        await this.changeStateTaskUseCase.execute({
+        await this.completeTaskUseCase.execute({
             id: id,
             userId: request.user.id
         })

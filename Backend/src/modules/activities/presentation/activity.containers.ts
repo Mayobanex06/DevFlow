@@ -1,22 +1,18 @@
 import { PostgresProjectRepository } from '../../projects/infrastructure/postgres-project.repository.js';
-import { PostgresActivityRepository } from '../infrastructure/postgres=activity.repository.js';
-import { PostgresTaskrRepository } from '../task/infrastructure/postgres-task.repository.js';
-import { PostgresUserRepository } from '../user/infrastructure/postgres-user.repository.js';
-import { CreateActivityUseCase } from '../application/activity-create.use-case.js';
-import { ActivityController } from './activity.routes.js';
+import { GetActivityUseCase } from '../application/get-activity.use-case.js';
+import { RecordActivityUseCase } from '../application/record-activity.use-case.js';
+import { PostgresActivityRepository } from '../infrastructure/postgres-activity.repository.js';
+import { ActivityController } from './activity.controller.js';
+
 
 const activityRepository = new PostgresActivityRepository();
-const userRepository = new PostgresUserRepository();
-const taskRepository = new PostgresTaskrRepository();
 const projectRepository = new PostgresProjectRepository();
 
-const CreateActivityUseCase = new CreateActivityUseCase(
+const getActivityUseCase = new GetActivityUseCase(
     activityRepository,
-    userRepository,
-    taskRepository,
-    projectReposity
-);
+    projectRepository
+)
 
 export const activityController = new ActivityController(
-    CreateActivityUseCase
+    getActivityUseCase
 );

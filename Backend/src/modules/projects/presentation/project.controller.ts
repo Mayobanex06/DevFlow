@@ -1,14 +1,14 @@
 import type { FastifyReply, FastifyRequest } from "fastify";
 import { CreateProjectUseCase } from "../application/use-cases/create-project.use-case.js";
-import { UpdateProjectUseCase } from "../application/update-project.use-case.js"
-import { ListProjectsUseCase } from "../application/list-project.use-case.js"
-import { GetProjectUseCase } from "../application/get-project.use-case.js"
-import { ListAllTeamsProjectUseCase } from "../application/listAllTeams-projects.use-case.js";
-import { AddTeamProjectUseCase } from "../application/addTeam-project.use-case.js";
-import { RemoveTeamProjectUseCase } from "../application/removeTeam-project.use-case.js";
+import { UpdateProjectUseCase } from "../application/use-cases/update-project.use-case.js";
+import { ListProjectsUseCase } from "../application/use-cases/list-project.use-case.js";
+import { GetProjectUseCase } from "../application/use-cases/get-project.use-case.js";
+import { ListAllTeamsProjectUseCase } from "../application/use-cases/listAllTeams-projects.use-case.js";
+import { AddTeamProjectUseCase } from "../application/use-cases/addTeam-project.use-case.js";
+import { RemoveTeamProjectUseCase } from "../application/use-cases/removeTeam-project.use-case.js";
 
 export interface ProjectParams {
-    id: number
+    projectId: number
 }
 
 export interface ProjectTeamParams {
@@ -19,7 +19,8 @@ export interface ProjectTeamParams {
 export interface CreateProjectBody {
     name: string, 
     description: string | null,
-    clientId: number 
+    clientId: number,
+    projectManagerId: number
 }
 
 export interface UpdateProjectBody {
@@ -49,6 +50,7 @@ export class ProjectController {
             name: body.name,
             description: body.description,
             clientId: body.clientId,
+            projectManagerId: body.projectManagerId,
             userId: request.user.id
         })
 
@@ -74,11 +76,11 @@ export class ProjectController {
         reply: FastifyReply
     ) {
 
-        const { id } = request.params
+        const { projectId } = request.params
         const body = request.body
         
         const project = await this.updateProjectUseCase.execute({
-            id: Number(id),
+            id: Number(projectId),
             name: body.name,
             description: body.description,
             clientId: body.clientId,
@@ -104,7 +106,9 @@ export class ProjectController {
         reply: FastifyReply
     ) {
 
-        const projects = await this.listProjectsUseCase.execute()
+        const projects = await this.listProjectsUseCase.execute({
+            userId: request.user.id
+        })
 
         return reply.status(200).send({
             data: projects.map(project => ({
@@ -129,10 +133,11 @@ export class ProjectController {
         reply: FastifyReply
     ) {
 
-        const { id } = request.params
+        const { projectId } = request.params
 
         const project = await this.getProjectUseCase.execute({
-            id: id
+            projectId: projectId,
+            userId: request.user.id
         })
 
         if (!project){
@@ -166,10 +171,11 @@ export class ProjectController {
         Params: ProjectParams
     }>, reply: FastifyReply) {
 
-        const id = request.params.id
+        const projectId = request.params.projectId
 
         const teams = await this.listAllTeamsProjectUseCase.execute({
-            id: id
+            projectId: projectId,
+            userId: request.user.id
         })
 
         return reply.status(200).send({

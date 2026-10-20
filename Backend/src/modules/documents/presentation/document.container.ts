@@ -1,3 +1,5 @@
+import { RecordActivityUseCase } from "../../activities/application/record-activity.use-case.js";
+import { PostgresActivityRepository } from "../../activities/infrastructure/postgres-activity.repository.js";
 import { PostgresProjectRepository } from "../../projects/infrastructure/postgres-project.repository.js";
 import { PostgresTaskRepository } from "../../task/infrastructure/postgres-task.repository.js";
 import { CreateDocumentUseCase } from "../application/create-document.use-case.js";
@@ -11,6 +13,9 @@ import { DocumentController } from "./document.controller.js";
 const documentRepository = new PostgresDocumentRepository()
 const projectRepository = new PostgresProjectRepository()
 const taskRepository = new PostgresTaskRepository()
+const activityRepository = new PostgresActivityRepository()
+
+const activityRecorder = new RecordActivityUseCase(activityRepository)
 
 const getDocumentUseCase = new GetDocumentUseCase(documentRepository)
 const getByProjectIdDocumentUseCase = new GetByProjectIdDocumentUseCase(
@@ -24,10 +29,12 @@ const getByTaskIdDocumentUseCase = new GetByTaskIdDocumentUseCase(
 const createDocumentUseCase = new CreateDocumentUseCase(
     documentRepository,
     projectRepository,
-    taskRepository
+    taskRepository,
+    activityRecorder
 )
 const deleteDocumentUseCase = new DeleteDocumentUseCase(
-    documentRepository
+    documentRepository,
+    activityRecorder
 )
 
 export const documentController = new DocumentController(
