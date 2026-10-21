@@ -6,7 +6,6 @@ import { CreateTaskUseCase } from "../application/use-case/create-task-use-case.
 import { UpdateTaskUseCase } from "../application/use-case/update-task-use-case.js";
 import { AssignTaskUseCase } from "../application/use-case/assign-task.use-case.js";
 import { CompleteTaskUseCase } from "../application/use-case/complete-task.use-case.js";
-import { NotFoundError } from "../../../shared/errors/not-found-error.js";
 
 
 export interface IdParams {

@@ -7,6 +7,7 @@ import { teamRoutes } from "../../modules/teams/presentation/team.routes.js"
 import { documentRoutes } from "../../modules/documents/presentation/document.routes.js";
 import { taskRoutes } from "../../modules/task/presentation/task.routes.js";
 import { authenticate } from "../auth/auth-container.js";
+import { activityRoutes } from "../../modules/activities/presentation/activity.routes.js";
 
 export async function apiRoutes(
     fastify: FastifyInstance
@@ -39,5 +40,9 @@ export async function apiRoutes(
 
     fastify.register(taskRoutes, {
         prefix: "/tasks"
+    })
+
+    fastify.register(activityRoutes, {
+        prefix: "/activities"
     })
 }

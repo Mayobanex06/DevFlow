@@ -3,7 +3,6 @@ import { HasMemberTeamUseCase } from "../application/use-cases/hasMember-team.us
 import { ListAllMembersTeamUseCase } from "../application/use-cases/list-allMembers-team.use-case.js"
 import { ListTeamsUseCase } from "../application/use-cases/list-teams.use-case.js"
 import { RemoveMemberFromTeamUseCase } from "../application/use-cases/removeMember-team.use-case.js"
-import { NotFoundError } from "../../../shared/errors/not-found-error.js"
 import { CreateTeamUseCase } from "../application/use-cases/create-team.use-case.js"
 import { GetTeamUseCase } from "../application/use-cases/get-team.use-case.js"
 import { AddMemberToTeamUseCase } from "../application/use-cases/addMember-team.use-case.js"
@@ -46,13 +45,6 @@ export class TeamController {
         const team = await this.getTeamUseCase.execute({
             id: id
         })
-
-        if(!team){
-            throw new NotFoundError(
-                "TEAM_NOT_FOUND",
-                "Team not found"
-            )
-        }
 
         return reply.status(200).send({
             data: {
